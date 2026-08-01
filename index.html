@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Моё Радио</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: var(--tg-theme-bg-color, #ffffff);
+    --text: var(--tg-theme-text-color, #000000);
+    --hint: var(--tg-theme-hint-color, #999999);
+    --link: var(--tg-theme-link-color, #3390ec);
+    --btn: var(--tg-theme-button-color, #3390ec);
+    --btn-text: var(--tg-theme-button-text-color, #ffffff);
+    --secondary: var(--tg-theme-secondary-bg-color, #f5f5f5);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--text);
+    -webkit-tap-highlight-color: transparent;
+  }
+  h2 { margin: 0 0 6px; font-size: 22px; }
+  .sub { color: var(--hint); font-size: 14px; margin-bottom: 16px; }
+  .station {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px; margin-bottom: 10px;
+    border-radius: 14px;
+    background: var(--secondary);
+    transition: transform .1s, background .2s;
+    cursor: pointer;
+    user-select: none;
+  }
+  .station:active { transform: scale(0.98); }
+  .station.active { background: var(--btn); color: var(--btn-text); }
+  .station.active .genre { color: rgba(255,255,255,0.75); }
+  .play-btn {
+    width: 46px; height: 46px; flex-shrink: 0;
+    border-radius: 50%; border: none;
+    background: var(--btn); color: var(--btn-text);
+    font-size: 20px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  .info h3 { margin: 0; font-size: 16px; font-weight: 600; }
+  .genre { margin: 3px 0 0; font-size: 13px; color: var(--hint); }
+  #status {
+    text-align: center; padding: 14px;
+    font-size: 14px; color: var(--hint);
+    min-height: 48px;
+  }
+  #status .now { color: var(--link); font-weight: 600; }
+  .footer { text-align: center; margin-top: 20px; font-size: 12px; color: var(--hint); }
+</style>
+</head>
+<body>
+
+<h2>📻 Мои любимые станции</h2>
+<div class="sub">Нажмите на станцию, чтобы включить</div>
+
+<div id="status">⏸ Ничего не играет</div>
+<div id="stations"></div>
+
+<div class="footer">Радио работает в фоновом режиме</div>
+
+<audio id="player" preload="none"></audio>
+
+<script>
+const stations = [
+  {id:"rp",    name:"Radio Paradise",      genre:"Эклектика / Rock",         url:"https://stream.radioparadise.com/mp3-192"},
+  {id:"soma",  name:"SomaFM",              genre:"Indie Pop Rocks",          url:"https://ice1.somafm.com/indiepop-128-mp3"},
+  {id:"r7",    name:"Радио 7",             genre:"На семи холмах",           url:"https://radio7.hostingradio.ru:8040/radio7-128.mp3"},
+  {id:"rec",   name:"Радио Record",        genre:"Dance / Electronic",       url:"https://air.radiorecord.ru:8101/rr_128"},
+  {id:"mc",    name:"Радио Монте-Карло",   genre:"Adult Contemporary",       url:"https://montecarlo.hostingradio.ru:8000/jfm128.mp3"},
+  {id:"symf",  name:"Радио Симфония FM",   genre:"Классическая музыка",      url:"http://94.181.45.104:8000/live"},
+  {id:"ep",    name:"Европа Плюс",         genre:"Хиты",                     url:"https://ep256.hostingradio.ru:8052/europaplus256.mp3"},
+  {id:"rus",   name:"Русское Радио",       genre:"Русские хиты",             url:"https://rusradio.hostingradio.ru/rusradio96.aacp"}
+];
+
+const player = document.getElementById("player");
+const container = document.getElementById("stations");
+const statusEl = document.getElementById("status");
+let currentId = null;
+
+// Инициализация Telegram WebApp
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+}
+
+function render() {
+  container.innerHTML = "";
+  stations.forEach(s => {
+    const isActive = s.id === currentId;
+    const isPlaying = isActive && !player.paused;
+    const div = document.createElement("div");
+    div.className = "station" + (isActive ? " active" : "");
+    div.innerHTML = `
+      <div class="play-btn">${isPlaying ? "⏸" : "▶️"}</div>
+      <div class="info">
+        <h3>${s.name}</h3>
+        <div class="genre">${s.genre}</div>
+      </div>
+    `;
+    div.onclick = () => toggle(s);
+    container.appendChild(div);
+  });
+}
+
+function toggle(s) {
+  if (currentId === s.id && !player.paused) {
+    player.pause();
+    statusEl.innerHTML = "⏸ Пауза";
+    render();
+    return;
+  }
+  currentId = s.id;
+  player.src = s.url;
+  player.play().then(() => {
+    statusEl.innerHTML = `▶️ Сейчас играет: <span class="now">${s.name}</span>`;
+    if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
+  }).catch(err => {
+    statusEl.textContent = "❌ Ошибка: " + (err.message || "не удалось воспроизвести");
+    console.error(err);
+  });
+  render();
+}
+
+player.onpause = render;
+player.onplay = render;
+player.onerror = () => {
+  statusEl.textContent = "❌ Не удалось загрузить поток. Попробуйте ещё раз.";
+};
+
+render();
+</script>
+</body>
+</html>
