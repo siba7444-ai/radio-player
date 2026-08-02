@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Часы + Радио</title>
+<title>Радио</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -13,66 +13,33 @@
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    padding: 32px 16px;
-  }
-  .app-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 28px;
-    width: 100%;
-    max-width: 1100px;
-    align-items: start;
-  }
-  @media (max-width: 900px) {
-    .app-grid { grid-template-columns: 1fr; }
-  }
-
-  /* === CLOCK PANEL === */
-  .clock-panel {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    background: #fff;
-    border-radius: 20px;
-    padding: 32px 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-  }
-  .clock-svg {
-    width: 100%;
-    max-width: 380px;
-    height: auto;
-    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.15));
-  }
-  .clock-label {
-    margin-top: 16px;
-    font-size: 13px;
-    color: #888;
-    letter-spacing: 0.1em;
-    text-transform: lowercase;
+    padding: 24px 16px;
   }
 
-  /* === RADIO PANEL === */
   .radio-panel {
-    background: #fff;
+    background: linear-gradient(135deg, #D4855A 0%, #C45C3A 100%);
     border-radius: 20px;
-    padding: 22px;
+    padding: 28px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 32px rgba(196,92,58,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+    color: #fff;
+    width: 100%;
+    max-width: 520px;
+    min-height: 600px;
   }
   .radio-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
   }
   .radio-header h2 {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     letter-spacing: -0.3px;
-    color: #222;
+    color: #fff;
   }
   .live-badge {
     display: none;
@@ -83,7 +50,7 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: #ff4444;
-    background: rgba(255,68,68,0.08);
+    background: rgba(255,68,68,0.12);
     padding: 3px 8px;
     border-radius: 20px;
   }
@@ -97,117 +64,118 @@
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.4; transform: scale(0.8); }
   }
-  .search-box { position: relative; margin-bottom: 12px; }
+  .search-box { position: relative; margin-bottom: 14px; }
   .search-box input {
     width: 100%;
-    padding: 9px 12px 9px 36px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background: #f5f5f5;
-    color: #222;
-    font-size: 13px;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 12px;
+    background: rgba(0,0,0,0.15);
+    color: #fff;
+    font-size: 14px;
     outline: none;
     transition: all 0.2s ease;
   }
-  .search-box input:focus { border-color: #999; background: #fff; }
-  .search-box input::placeholder { color: #aaa; }
+  .search-box input:focus { border-color: rgba(255,255,255,0.5); background: rgba(0,0,0,0.25); }
+  .search-box input::placeholder { color: rgba(255,255,255,0.5); }
   .search-icon {
     position: absolute;
     left: 10px; top: 50%;
     transform: translateY(-50%);
-    color: #999;
+    color: rgba(255,255,255,0.6);
     pointer-events: none;
   }
   .category-tabs {
     display: flex;
     gap: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     overflow-x: auto;
     padding-bottom: 4px;
   }
   .category-tabs::-webkit-scrollbar { display: none; }
   .cat-btn {
-    padding: 5px 12px;
-    border: 1px solid #ddd;
+    padding: 6px 14px;
+    border: 1px solid rgba(255,255,255,0.3);
     border-radius: 20px;
     background: transparent;
-    color: #666;
+    color: rgba(255,255,255,0.8);
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.2s ease;
   }
-  .cat-btn:hover { border-color: #222; color: #222; }
-  .cat-btn.active { background: #222; color: #fff; border-color: #222; }
+  .cat-btn:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.1); }
+  .cat-btn.active { background: #fff; color: #C45C3A; border-color: #fff; font-weight: 600; }
   .station-list {
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    max-height: 240px;
+    gap: 6px;
+    max-height: 340px;
     overflow-y: auto;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
   }
   .station-list::-webkit-scrollbar { width: 4px; }
-  .station-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+  .station-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 4px; }
   .station-item {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 10px;
-    border-radius: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
     border: 1px solid transparent;
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
+    background: rgba(0,0,0,0.1);
   }
-  .station-item:hover { background: #f5f5f5; border-color: #e0e0e0; }
-  .station-item.active { background: #f0f0f0; border-color: #222; }
+  .station-item:hover { background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.15); }
+  .station-item.active { background: rgba(0,0,0,0.25); border-color: rgba(255,255,255,0.4); }
   .station-item.playing {
-    background: rgba(34,197,94,0.06);
-    border-color: rgba(34,197,94,0.4);
+    background: rgba(34,197,94,0.15);
+    border-color: rgba(34,197,94,0.5);
   }
   .station-item.loading {
-    border-color: rgba(234,179,8,0.4);
-    background: rgba(234,179,8,0.04);
+    border-color: rgba(234,179,8,0.5);
+    background: rgba(234,179,8,0.1);
   }
   .station-item.error {
-    border-color: rgba(239,68,68,0.3);
-    background: rgba(239,68,68,0.04);
+    border-color: rgba(239,68,68,0.4);
+    background: rgba(239,68,68,0.1);
   }
   .station-icon {
-    width: 32px; height: 32px;
-    border-radius: 6px;
-    background: #eee;
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.15);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    color: #888;
+    color: rgba(255,255,255,0.7);
   }
   .station-item.active .station-icon,
   .station-item.playing .station-icon {
-    color: #222;
-    background: #ddd;
+    color: #fff;
+    background: rgba(255,255,255,0.3);
   }
   .station-info { flex: 1; min-width: 0; }
   .station-name {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
-    color: #222;
+    color: #fff;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .station-meta {
     font-size: 11px;
-    color: #999;
-    margin-top: 1px;
+    color: rgba(255,255,255,0.6);
+    margin-top: 2px;
   }
   .station-status {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
   }
   .eq-bars {
     display: flex;
@@ -217,7 +185,7 @@
   }
   .eq-bar {
     width: 3px;
-    background: #22c55e;
+    background: #4ade80;
     border-radius: 1px;
     animation: eq 0.6s ease-in-out infinite alternate;
   }
@@ -231,70 +199,71 @@
   }
   .spinner {
     width: 14px; height: 14px;
-    border: 2px solid #ddd;
-    border-top-color: #222;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: #fff;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   .player-panel {
-    border: 1px solid #e0e0e0;
-    border-radius: 14px;
-    padding: 12px;
-    background: #fafafa;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 16px;
+    background: rgba(0,0,0,0.15);
+    margin-top: auto;
   }
   .now-playing {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 12px;
+    margin-bottom: 14px;
   }
   .np-cover {
-    width: 42px; height: 42px;
-    border-radius: 6px;
-    background: #eee;
+    width: 46px; height: 46px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #888;
+    color: rgba(255,255,255,0.7);
     flex-shrink: 0;
   }
   .np-info { flex: 1; min-width: 0; }
   .np-station {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
-    color: #222;
+    color: #fff;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .np-track {
-    font-size: 12px;
-    color: #666;
-    margin-top: 1px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    margin-top: 2px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-height: 16px;
+    min-height: 18px;
   }
   .np-status {
-    font-size: 11px;
-    color: #999;
-    margin-top: 1px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    margin-top: 2px;
   }
   .controls-row {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
-    margin-bottom: 10px;
+    gap: 18px;
+    margin-bottom: 14px;
   }
   .ctrl-btn {
-    width: 36px; height: 36px;
+    width: 40px; height: 40px;
     border-radius: 50%;
-    border: 1px solid #ddd;
+    border: 1px solid rgba(255,255,255,0.3);
     background: transparent;
-    color: #666;
+    color: rgba(255,255,255,0.85);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -302,21 +271,21 @@
     transition: all 0.2s ease;
   }
   .ctrl-btn:hover {
-    border-color: #222;
-    color: #222;
-    background: #eee;
+    border-color: #fff;
+    color: #fff;
+    background: rgba(255,255,255,0.15);
   }
   .ctrl-btn.primary {
-    width: 46px; height: 46px;
-    background: #222;
-    color: #fff;
+    width: 52px; height: 52px;
+    background: #fff;
+    color: #C45C3A;
     border: none;
   }
-  .ctrl-btn.primary:hover { opacity: 0.85; }
+  .ctrl-btn.primary:hover { opacity: 0.9; }
   .volume-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
   .volume-slider {
     flex: 1;
@@ -324,45 +293,45 @@
     appearance: none;
     height: 4px;
     border-radius: 2px;
-    background: #ddd;
+    background: rgba(255,255,255,0.25);
     outline: none;
   }
   .volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 12px; height: 12px;
+    width: 14px; height: 14px;
     border-radius: 50%;
-    background: #222;
+    background: #fff;
     cursor: pointer;
   }
   .volume-slider::-moz-range-thumb {
-    width: 12px; height: 12px;
+    width: 14px; height: 14px;
     border-radius: 50%;
-    background: #222;
+    background: #fff;
     cursor: pointer;
     border: none;
   }
   .vol-icon-btn {
     background: none;
     border: none;
-    color: #888;
+    color: rgba(255,255,255,0.7);
     cursor: pointer;
     padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  .vol-icon-btn:hover { color: #222; }
+  .vol-icon-btn:hover { color: #fff; }
   .empty-state {
     text-align: center;
-    padding: 24px 12px;
-    color: #aaa;
-    font-size: 12px;
+    padding: 32px 12px;
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
   }
   .fav-btn {
     background: none;
     border: none;
-    color: #bbb;
+    color: rgba(255,255,255,0.4);
     cursor: pointer;
     padding: 4px;
     display: flex;
@@ -370,197 +339,75 @@
     justify-content: center;
     transition: all 0.2s ease;
   }
-  .fav-btn:hover { color: #888; }
-  .fav-btn.is-fav { color: #ff4444; }
+  .fav-btn:hover { color: rgba(255,255,255,0.7); }
+  .fav-btn.is-fav { color: #ff6b6b; }
 </style>
+<base target="_blank">
 </head>
 <body>
 
-<div class="app-grid">
-
-  <!-- ===== CLOCK ===== -->
-  <div class="clock-panel">
-    <svg viewBox="0 0 520 520" class="clock-svg" id="clock-svg">
-      <defs>
-        <radialGradient id="face-grad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#1E2A4A"/>
-          <stop offset="70%" stop-color="#141D33"/>
-          <stop offset="100%" stop-color="#0D1320"/>
-        </radialGradient>
-        <linearGradient id="rim-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#D4A76A"/>
-          <stop offset="30%" stop-color="#C4945A"/>
-          <stop offset="50%" stop-color="#E8C48A"/>
-          <stop offset="70%" stop-color="#B08040"/>
-          <stop offset="100%" stop-color="#8B5E2E"/>
-        </linearGradient>
-        <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
-          <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.18"/>
-        </filter>
-      </defs>
-
-      <circle cx="260" cy="260" r="250" fill="url(#rim-grad)" filter="url(#shadow)"/>
-      <circle cx="260" cy="260" r="246" fill="none" stroke="#6B4423" stroke-width="0.8" opacity="0.3"/>
-      <circle cx="260" cy="260" r="242" fill="none" stroke="#5A3A1A" stroke-width="1" opacity="0.2"/>
-      <circle cx="260" cy="260" r="238" fill="none" stroke="#000" stroke-width="3" opacity="0.25"/>
-      <circle cx="260" cy="260" r="235" fill="url(#face-grad)"/>
-
-      <g id="ticks" stroke="#FFFFFF" stroke-linecap="round"/>
-      <g id="numbers" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="38" font-weight="400" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle"/>
-      <text x="260" y="178" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="10" font-weight="500" fill="#FFFFFF" text-anchor="middle" opacity="0.45" letter-spacing="0.2em">QUARTZ</text>
-
-      <g id="hour-hand">
-        <line x1="260" y1="260" x2="260" y2="168" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round"/>
-        <line x1="260" y1="260" x2="260" y2="292" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round"/>
-      </g>
-      <g id="minute-hand">
-        <line x1="260" y1="260" x2="260" y2="128" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
-        <line x1="260" y1="260" x2="260" y2="296" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
-      </g>
-      <g id="second-hand">
-        <line x1="260" y1="288" x2="260" y2="118" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round"/>
-        <circle cx="260" cy="118" r="2.5" fill="#FFFFFF"/>
-        <circle cx="260" cy="288" r="4" fill="#FFFFFF"/>
-      </g>
-
-      <circle cx="260" cy="260" r="10" fill="#FFFFFF"/>
-      <circle cx="260" cy="260" r="3" fill="#0D1320"/>
-    </svg>
-    <div class="clock-label">Настенные часы</div>
+<div class="radio-panel">
+  <div class="radio-header">
+    <h2>Радио</h2>
+    <div class="live-badge" id="live-badge">
+      <span class="live-dot"></span>
+      <span>Live</span>
+    </div>
   </div>
-
-  <!-- ===== RADIO ===== -->
-  <div class="radio-panel">
-    <div class="radio-header">
-      <h2>Радио</h2>
-      <div class="live-badge" id="live-badge">
-        <span class="live-dot"></span>
-        <span>Live</span>
-      </div>
-    </div>
-
-    <div class="search-box">
-      <span class="search-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M11.5 3C16.1944 3 20 6.80558 20 11.5C20 13.523 19.2933 15.381 18.1132 16.8404L21.1364 19.8636C21.4879 20.2151 21.4879 20.7849 21.1364 21.1364C20.7849 21.4879 20.2151 21.4879 19.8636 21.1364L16.8404 18.1132C15.381 19.2933 13.523 20 11.5 20C6.80558 20 3 16.1944 3 11.5C3 6.80558 6.80558 3 11.5 3ZM11.5 18.2C15.2003 18.2 18.2 15.2003 18.2 11.5C18.2 7.79969 15.2003 4.8 11.5 4.8C7.79969 4.8 4.8 7.79969 4.8 11.5C4.8 15.2003 7.79969 18.2 11.5 18.2Z" fill="currentColor"/></svg>
-      </span>
-      <input type="text" id="search-input" placeholder="Найти станцию...">
-    </div>
-
-    <div class="category-tabs" id="category-tabs">
-      <button class="cat-btn active" data-cat="all">Все</button>
-      <button class="cat-btn" data-cat="pop">Поп</button>
-      <button class="cat-btn" data-cat="rock">Рок</button>
-      <button class="cat-btn" data-cat="electronic">Электро</button>
-      <button class="cat-btn" data-cat="jazz">Джаз</button>
-      <button class="cat-btn" data-cat="classical">Классика</button>
-      <button class="cat-btn" data-cat="news">Новости</button>
-      <button class="cat-btn" data-cat="favorites">★ Избранное</button>
-    </div>
-
-    <div class="station-list" id="station-list"></div>
-
-    <div class="player-panel" id="player-panel">
-      <div class="now-playing">
-        <div class="np-cover">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 12.1c.5 0 .9.4.9.9v5c0 1.6-1.3 2.9-2.9 2.9S3.1 19.6 3.1 18c0-1.6 1.3-2.9 2.9-2.9.4 0 .8.1 1.1.2v-2.3c0-.5.4-.9.9-.9zm-2 4.8c-.6 0-1.1.5-1.1 1.1s.5 1.1 1.1 1.1 1.1-.5 1.1-1.1-.5-1.1-1.1-1.1z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M18.6 3.4c1.2-.2 2.3.7 2.3 1.9v10.7c0 1.6-1.3 2.9-2.9 2.9s-2.9-1.3-2.9-2.9c0-1.6 1.3-2.9 2.9-2.9.4 0 .8.1 1.1.2V9.2c0-.1-.1-.1-.1-.1l-6.3 1.3c-.5.1-.9-.2-1-.7-.1-.5.2-.9.7-1l6.3-1.3c.2 0 .3 0 .5 0V5.2c0-.1-.1-.1-.1-.1l-6.3 1.3c-.5.1-.9-.2-1-.7-.1-.5.2-.9.7-1l6.3-1.3zm-.6 11.5c-.6 0-1.1.5-1.1 1.1s.5 1.1 1.1 1.1 1.1-.5 1.1-1.1-.5-1.1-1.1-1.1z" fill="currentColor"/><path d="M7.3 5.4c.3-.5 1-.5 1.4 0l.1.1.1.5.1.2c.2.4.6.8 1.1 1l.4.2c.6.2.7 1.1.1 1.4l-.1 0-.5.2c-.4.2-.8.5-1 .9l-.1.2-.2.4c-.2.6-1.1.7-1.4.1l0-.1-.2-.4c-.2-.5-.5-.8-.9-1l-.2-.1-.4-.2c-.7-.2-.7-1.2 0-1.4l.4-.2.2-.1c.4-.2.8-.6 1-.9l.2-.4.1-.5z" fill="currentColor"/></svg>
-        </div>
-        <div class="np-info">
-          <div class="np-station" id="np-station">Выберите станцию</div>
-          <div class="np-track" id="np-track"></div>
-          <div class="np-status" id="np-status">Нажмите Play для начала</div>
-        </div>
-      </div>
-
-      <div class="controls-row">
-        <button class="ctrl-btn" id="btn-prev" aria-label="Предыдущая">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17.8 4.3c.4-.4 1-.4 1.4 0 .4.4.4 1 0 1.4l-6.3 6.3 6.3 6.3c.4.4.4 1 0 1.4-.4.4-1 .4-1.4 0l-7-7c-.4-.4-.4-1 0-1.4l7-7z" fill="currentColor"/><path d="M11.8 4.3c.4-.4 1-.4 1.4 0 .4.4.4 1 0 1.4L7 12l6.3 6.3c.4.4.4 1 0 1.4-.4.4-1 .4-1.4 0l-7-7c-.4-.4-.4-1 0-1.4l7-7z" fill="currentColor"/></svg>
-        </button>
-        <button class="ctrl-btn primary" id="btn-play" aria-label="Play">
-          <svg id="icon-play" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7.8 3.1c.5 0 1 .1 1.4.4l10.4 6.1c1.3.8 1.7 2.5 1 3.8-.2.4-.6.7-1 1L9.2 20.5c-1.3.8-3 .3-3.8-1-.3-.4-.4-.9-.4-1.4V5.9c0-1.5 1.2-2.8 2.8-2.8zm-1 15c0 .2 0 .3.1.5.3.5.8.6 1.3.4l10.4-6.1c.1-.1.2-.2.3-.3.3-.5.1-1.1-.3-1.4L8.3 5.1c-.2-.1-.3-.1-.5-.1-.5 0-.9.4-.9.9v12.2z" fill="currentColor"/></svg>
-          <svg id="icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:none;"><rect x="9" y="8.5" width="1.5" height="7" fill="currentColor"/><rect x="13.5" y="8.5" width="1.5" height="7" fill="currentColor"/></svg>
-        </button>
-        <button class="ctrl-btn" id="btn-next" aria-label="Следующая">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6.2 4.3c-.4-.4-1-.4-1.4 0-.4.4-.4 1 0 1.4l6.3 6.3-6.3 6.3c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l7-7c.4-.4.4-1 0-1.4l-7-7z" fill="currentColor"/><path d="M12.2 4.3c-.4-.4-1-.4-1.4 0-.4.4-.4 1 0 1.4L17 12l-6.3 6.3c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l7-7c.4-.4.4-1 0-1.4l-7-7z" fill="currentColor"/></svg>
-        </button>
-      </div>
-
-      <div class="volume-row">
-        <button class="vol-icon-btn" id="btn-mute" aria-label="Громкость">
-          <svg id="icon-volon" width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.8 2.8c1.8-1.5 4.6-.3 4.6 2.1v14.3c0 2.4-2.9 3.7-4.7 2.1l-3.7-3.4h-.2c-1.5 0-2.8-1.3-2.8-2.8V9.5c0-1.5 1.2-2.8 2.8-2.8h.1l3.7-3.7.2-.2zm2.9 2.1c0-.9-1.1-1.3-1.7-.7l-4.2 4.2-.9 0c-.6 0-1 .5-1 1v5.6c0 .1 0 .2.1.3.1.5.4.8.9.9h.1.9l4.2 3.9c.6.6 1.5.2 1.6-.6v-14.6z" fill="currentColor"/><path d="M18.5 7.2c.4-.4 1-.4 1.3 0 1.3 1.3 2 3.1 2 5 0 1.9-.7 3.7-2 5-.3.4-.9.4-1.3 0-.3-.3-.3-.9 0-1.3 1-1 1.5-2.3 1.5-3.7 0-1.4-.5-2.7-1.5-3.7-.3-.4-.3-.9 0-1.3z" fill="currentColor"/><path d="M15.3 8.9c.4-.4.9-.4 1.3 0 .9.9 1.4 2.1 1.4 3.3 0 1.3-.5 2.5-1.4 3.4-.3.4-.9.4-1.2 0-.4-.3-.4-.9-.1-1.3.6-.6.9-1.3.9-2.1 0-.8-.3-1.5-.9-2.1-.3-.3-.3-.8 0-1.2z" fill="currentColor"/></svg>
-          <svg id="icon-voloff" width="16" height="16" viewBox="0 0 24 24" fill="none" style="display:none;"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.9 2.8c1.8-1.5 4.6-.3 4.6 2.1v14.3c0 2.4-2.9 3.7-4.7 2.1l-3.7-3.4h-.2c-1.5 0-2.8-1.3-2.8-2.8V9.5c0-1.5 1.2-2.8 2.8-2.8h.1l3.7-3.7.2-.2zm2.9 2.1c0-.9-1.1-1.3-1.7-.7l-4.2 4.2-.9 0c-.6 0-1 .5-1 1v5.6c0 .1 0 .2.1.3.1.5.4.8.9.9h.1.9l4.2 3.9c.6.6 1.5.2 1.6-.6v-14.6z" fill="currentColor"/><path d="M20.5 8.9c.4-.4.9-.4 1.3 0 .4.4.4.9 0 1.3l-2 2 2 2c.4.4.4.9 0 1.3-.4.4-.9.4-1.3 0l-2-2-2 2c-.4.4-.9.4-1.3 0-.4-.4-.4-.9 0-1.3l2-2-2-2c-.4-.3-.4-.9 0-1.2l2-2 2 2z" fill="currentColor"/></svg>
-        </button>
-        <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="70">
-      </div>
-    </div>
-
-    <audio id="audio-player" preload="none" crossorigin="anonymous"></audio>
+  <div class="search-box">
+    <span class="search-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M11.5 3C16.1944 3 20 6.80558 20 11.5C20 13.523 19.2933 15.381 18.1132 16.8404L21.1364 19.8636C21.4879 20.2151 21.4879 20.7849 21.1364 21.1364C20.7849 21.4879 20.2151 21.4879 19.8636 21.1364L16.8404 18.1132C15.381 19.2933 13.523 20 11.5 20C6.80558 20 3 16.1944 3 11.5C3 6.80558 6.80558 3 11.5 3ZM11.5 18.2C15.2003 18.2 18.2 15.2003 18.2 11.5C18.2 7.79969 15.2003 4.8 11.5 4.8C7.79969 4.8 4.8 7.79969 4.8 11.5C4.8 15.2003 7.79969 18.2 11.5 18.2Z" fill="currentColor"/></svg>
+    </span>
+    <input type="text" id="search-input" placeholder="Найти станцию...">
   </div>
-
+  <div class="category-tabs" id="category-tabs">
+    <button class="cat-btn active" data-cat="all">Все</button>
+    <button class="cat-btn" data-cat="pop">Поп</button>
+    <button class="cat-btn" data-cat="rock">Рок</button>
+    <button class="cat-btn" data-cat="electronic">Электро</button>
+    <button class="cat-btn" data-cat="jazz">Джаз</button>
+    <button class="cat-btn" data-cat="classical">Классика</button>
+    <button class="cat-btn" data-cat="news">Новости</button>
+    <button class="cat-btn" data-cat="favorites">★ Избранное</button>
+  </div>
+  <div class="station-list" id="station-list"></div>
+  <div class="player-panel" id="player-panel">
+    <div class="now-playing">
+      <div class="np-cover">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 12.1c.5 0 .9.4.9.9v5c0 1.6-1.3 2.9-2.9 2.9S3.1 19.6 3.1 18c0-1.6 1.3-2.9 2.9-2.9.4 0 .8.1 1.1.2v-2.3c0-.5.4-.9.9-.9zm-2 4.8c-.6 0-1.1.5-1.1 1.1s.5 1.1 1.1 1.1 1.1-.5 1.1-1.1-.5-1.1-1.1-1.1z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M18.6 3.4c1.2-.2 2.3.7 2.3 1.9v10.7c0 1.6-1.3 2.9-2.9 2.9s-2.9-1.3-2.9-2.9c0-1.6 1.3-2.9 2.9-2.9.4 0 .8.1 1.1.2V9.2c0-.1-.1-.1-.1-.1l-6.3 1.3c-.5.1-.9-.2-1-.7-.1-.5.2-.9.7-1l6.3-1.3c.2 0 .3 0 .5 0V5.2c0-.1-.1-.1-.1-.1l-6.3 1.3c-.5.1-.9-.2-1-.7-.1-.5.2-.9.7-1l6.3-1.3zm-.6 11.5c-.6 0-1.1.5-1.1 1.1s.5 1.1 1.1 1.1 1.1-.5 1.1-1.1-.5-1.1-1.1-1.1z" fill="currentColor"/><path d="M7.3 5.4c.3-.5 1-.5 1.4 0l.1.1.1.5.1.2c.2.4.6.8 1.1 1l.4.2c.6.2.7 1.1.1 1.4l-.1 0-.5.2c-.4.2-.8.5-1 .9l-.1.2-.2.4c-.2.6-1.1.7-1.4.1l0-.1-.2-.4c-.2-.5-.5-.8-.9-1l-.2-.1-.4-.2c-.7-.2-.7-1.2 0-1.4l.4-.2.2-.1c.4-.2.8-.6 1-.9l.2-.4.1-.5z" fill="currentColor"/></svg>
+      </div>
+      <div class="np-info">
+        <div class="np-station" id="np-station">Выберите станцию</div>
+        <div class="np-track" id="np-track"></div>
+        <div class="np-status" id="np-status">Нажмите Play для начала</div>
+      </div>
+    </div>
+    <div class="controls-row">
+      <button class="ctrl-btn" id="btn-prev" aria-label="Предыдущая">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17.8 4.3c.4-.4 1-.4 1.4 0 .4.4.4 1 0 1.4l-6.3 6.3 6.3 6.3c.4.4.4 1 0 1.4-.4.4-1 .4-1.4 0l-7-7c-.4-.4-.4-1 0-1.4l7-7z" fill="currentColor"/><path d="M11.8 4.3c.4-.4 1-.4 1.4 0 .4.4.4 1 0 1.4L7 12l6.3 6.3c.4.4.4 1 0 1.4-.4.4-1 .4-1.4 0l-7-7c-.4-.4-.4-1 0-1.4l7-7z" fill="currentColor"/></svg>
+      </button>
+      <button class="ctrl-btn primary" id="btn-play" aria-label="Play">
+        <svg id="icon-play" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7.8 3.1c.5 0 1 .1 1.4.4l10.4 6.1c1.3.8 1.7 2.5 1 3.8-.2.4-.6.7-1 1L9.2 20.5c-1.3.8-3 .3-3.8-1-.3-.4-.4-.9-.4-1.4V5.9c0-1.5 1.2-2.8 2.8-2.8zm-1 15c0 .2 0 .3.1.5.3.5.8.6 1.3.4l10.4-6.1c.1-.1.2-.2.3-.3.3-.5.1-1.1-.3-1.4L8.3 5.1c-.2-.1-.3-.1-.5-.1-.5 0-.9.4-.9.9v12.2z" fill="currentColor"/></svg>
+        <svg id="icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:none;"><rect x="9" y="8.5" width="1.5" height="7" fill="currentColor"/><rect x="13.5" y="8.5" width="1.5" height="7" fill="currentColor"/></svg>
+      </button>
+      <button class="ctrl-btn" id="btn-next" aria-label="Следующая">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6.2 4.3c-.4-.4-1-.4-1.4 0-.4.4-.4 1 0 1.4l6.3 6.3-6.3 6.3c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l7-7c.4-.4.4-1 0-1.4l-7-7z" fill="currentColor"/><path d="M12.2 4.3c-.4-.4-1-.4-1.4 0-.4.4-.4 1 0 1.4L17 12l-6.3 6.3c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l7-7c.4-.4.4-1 0-1.4l-7-7z" fill="currentColor"/></svg>
+      </button>
+    </div>
+    <div class="volume-row">
+      <button class="vol-icon-btn" id="btn-mute" aria-label="Громкость">
+        <svg id="icon-volon" width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.8 2.8c1.8-1.5 4.6-.3 4.6 2.1v14.3c0 2.4-2.9 3.7-4.7 2.1l-3.7-3.4h-.2c-1.5 0-2.8-1.3-2.8-2.8V9.5c0-1.5 1.2-2.8 2.8-2.8h.1l3.7-3.7.2-.2zm2.9 2.1c0-.9-1.1-1.3-1.7-.7l-4.2 4.2-.9 0c-.6 0-1 .5-1 1v5.6c0 .1 0 .2.1.3.1.5.4.8.9.9h.1.9l4.2 3.9c.6.6 1.5.2 1.6-.6v-14.6z" fill="currentColor"/><path d="M18.5 7.2c.4-.4 1-.4 1.3 0 1.3 1.3 2 3.1 2 5 0 1.9-.7 3.7-2 5-.3.4-.9.4-1.3 0-.3-.3-.3-.9 0-1.3 1-1 1.5-2.3 1.5-3.7 0-1.4-.5-2.7-1.5-3.7-.3-.4-.3-.9 0-1.3z" fill="currentColor"/><path d="M15.3 8.9c.4-.4.9-.4 1.3 0 .9.9 1.4 2.1 1.4 3.3 0 1.3-.5 2.5-1.4 3.4-.3.4-.9.4-1.2 0-.4-.3-.4-.9-.1-1.3.6-.6.9-1.3.9-2.1 0-.8-.3-1.5-.9-2.1-.3-.3-.3-.8 0-1.2z" fill="currentColor"/></svg>
+        <svg id="icon-voloff" width="16" height="16" viewBox="0 0 24 24" fill="none" style="display:none;"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.9 2.8c1.8-1.5 4.6-.3 4.6 2.1v14.3c0 2.4-2.9 3.7-4.7 2.1l-3.7-3.4h-.2c-1.5 0-2.8-1.3-2.8-2.8V9.5c0-1.5 1.2-2.8 2.8-2.8h.1l3.7-3.7.2-.2zm2.9 2.1c0-.9-1.1-1.3-1.7-.7l-4.2 4.2-.9 0c-.6 0-1 .5-1 1v5.6c0 .1 0 .2.1.3.1.5.4.8.9.9h.1.9l4.2 3.9c.6.6 1.5.2 1.6-.6v-14.6z" fill="currentColor"/><path d="M20.5 8.9c.4-.4.9-.4 1.3 0 .4.4.4.9 0 1.3l-2 2 2 2c.4.4.4.9 0 1.3-.4.4-.9.4-1.3 0l-2-2-2 2c-.4.4-.9.4-1.3 0-.4-.4-.4-.9 0-1.3l2-2-2-2c-.4-.3-.4-.9 0-1.2l2-2 2 2z" fill="currentColor"/></svg>
+      </button>
+      <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="70">
+    </div>
+  </div>
+  <audio id="audio-player" preload="none" crossorigin="anonymous"></audio>
 </div>
 
 <script>
-/* ========= CLOCK ========= */
 (function() {
-  const ticksGroup = document.getElementById('ticks');
-  const numbersGroup = document.getElementById('numbers');
-
-  for (let i = 0; i < 60; i++) {
-    const angleDeg = i * 6;
-    const isHour = i % 5 === 0;
-    const innerR = isHour ? 208 : 216;
-    const outerR = isHour ? 228 : 224;
-    const w = isHour ? 3 : 1;
-    const opacity = isHour ? 0.95 : 0.5;
-    const rad = (angleDeg - 90) * Math.PI / 180;
-    const x1 = 260 + innerR * Math.cos(rad);
-    const y1 = 260 + innerR * Math.sin(rad);
-    const x2 = 260 + outerR * Math.cos(rad);
-    const y2 = 260 + outerR * Math.sin(rad);
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', x1.toFixed(2));
-    line.setAttribute('y1', y1.toFixed(2));
-    line.setAttribute('x2', x2.toFixed(2));
-    line.setAttribute('y2', y2.toFixed(2));
-    line.setAttribute('stroke-width', w);
-    line.setAttribute('opacity', opacity);
-    ticksGroup.appendChild(line);
-  }
-
-  for (let n = 1; n <= 12; n++) {
-    const angleDeg = n * 30 - 90;
-    const rad = angleDeg * Math.PI / 180;
-    const r = 188;
-    const x = 260 + r * Math.cos(rad);
-    const y = 260 + r * Math.sin(rad);
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', x.toFixed(2));
-    text.setAttribute('y', y.toFixed(2));
-    text.setAttribute('dy', '1');
-    text.textContent = n;
-    numbersGroup.appendChild(text);
-  }
-
-  const hourHand = document.getElementById('hour-hand');
-  const minuteHand = document.getElementById('minute-hand');
-  const secondHand = document.getElementById('second-hand');
-
-  function updateClock() {
-    const now = new Date();
-    const h = now.getHours() % 12;
-    const m = now.getMinutes();
-    const s = now.getSeconds();
-    const ms = now.getMilliseconds();
-    secondHand.setAttribute('transform', `rotate(${(s + ms/1000)*6} 260 260)`);
-    minuteHand.setAttribute('transform', `rotate(${(m + s/60)*6} 260 260)`);
-    hourHand.setAttribute('transform', `rotate(${(h + m/60)*30} 260 260)`);
-    requestAnimationFrame(updateClock);
-  }
-  requestAnimationFrame(updateClock);
-})();
-
-/* ========= RADIO ========= */
-(function() {
-    const stations = [
+  const stations = [
     { id: 1, name: "Radio Paradise", genre: "Эклектика", cat: "pop", urls: ["https://stream.radioparadise.com/aac-128", "https://stream.radioparadise.com/mp3-192"], country: "США", api: "rp", apiId: "0" },
     { id: 2, name: "SomaFM — Indie Pop Rocks", genre: "Indie Pop", cat: "pop", urls: ["https://ice.somafm.com/indiepop", "https://ice5.somafm.com/indiepop-128-mp3"], country: "США", api: "somafm", apiId: "indiepop" },
     { id: 3, name: "Радио 7 на семи холмах", genre: "Хиты", cat: "pop", urls: ["https://radio7.hostingradio.ru:8040/radio7256.mp3"], country: "Россия", api: null },
@@ -568,50 +415,43 @@
     { id: 5, name: "Радио Монте Карло", genre: "Лёгкие хиты", cat: "pop", urls: ["https://montecarlo.hostingradio.ru/montecarlo96.aacp"], country: "Россия", api: null },
     { id: 6, name: "Радио Симфония FM", genre: "Классика / Симфония", cat: "classical", urls: ["https://radiorecord.hostingradio.ru/symph96.aacp"], country: "Россия", api: null },
     { id: 7, name: "Радио Европа плюс", genre: "Хиты", cat: "pop", urls: ["http://ep128server.streamr.ru:8030/ep128", "http://emgregion.hostingradio.ru:8064/moscow.europaplus.mp3"], country: "Россия", api: null },
-    { id: 8, name: "Русское радио", genre: "Русские хиты", cat: "pop", urls: ["http://dfm.hostingradio.ru/rusradio128.mp3"], country: "Россия", api: null },
+    { id: 8, name: "Русское радио", genre: "Русские хиты", cat: "pop", urls: ["http://dfm.hostingradio.ru/rusradio128.mp3"], country: "Россия", api: null }
   ];
-
   let currentStation = null, isPlaying = false, isLoading = false;
   let currentCat = 'all', favorites = new Set();
   let volume = 0.7, isMuted = false;
   let currentUrlIndex = 0, loadTimeout = null;
   let nowPlayingInterval = null;
-
   const audio = document.getElementById('audio-player');
   const stationList = document.getElementById('station-list');
   const searchInput = document.getElementById('search-input');
   const npStation = document.getElementById('np-station');
   const npTrack = document.getElementById('np-track');
   const npStatus = document.getElementById('np-status');
-  const btnPlay = document.getElementById('btn-play');
   const iconPlay = document.getElementById('icon-play');
   const iconPause = document.getElementById('icon-pause');
   const liveBadge = document.getElementById('live-badge');
   const catTabs = document.getElementById('category-tabs');
-
   try {
     const saved = localStorage.getItem('radio_favorites_v2');
     if (saved) favorites = new Set(JSON.parse(saved));
   } catch(e) {}
-
   function saveFavorites() {
-    try { localStorage.setItem('radio_favorites_v2', JSON.stringify([...favorites])); } catch(e) {}
+    try { localStorage.setItem('radio_favorites_v2', JSON.stringify(Array.from(favorites))); } catch(e) {}
   }
-
   function getFilteredStations() {
     const q = searchInput.value.toLowerCase().trim();
-    return stations.filter(s => {
+    return stations.filter(function(s) {
       const ms = !q || s.name.toLowerCase().includes(q) || s.genre.toLowerCase().includes(q) || s.country.toLowerCase().includes(q);
       const mc = currentCat === 'all' || (currentCat === 'favorites' ? favorites.has(s.id) : s.cat === currentCat);
       return ms && mc;
     });
   }
-
   function renderStations() {
     const filtered = getFilteredStations();
     stationList.innerHTML = '';
     if (!filtered.length) { stationList.innerHTML = '<div class="empty-state">Станции не найдены</div>'; return; }
-    filtered.forEach(s => {
+    filtered.forEach(function(s) {
       const isActive = currentStation && currentStation.id === s.id;
       const isFav = favorites.has(s.id);
       let cls = '';
@@ -621,34 +461,18 @@
       else if (isActive) cls = ' active';
       const div = document.createElement('div');
       div.className = 'station-item' + cls;
-      div.innerHTML = `
-        <div class="station-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 12.1c.5 0 .9.4.9.9v5c0 1.6-1.3 2.9-2.9 2.9S3.1 19.6 3.1 18c0-1.6 1.3-2.9 2.9-2.9.4 0 .8.1 1.1.2v-2.3c0-.5.4-.9.9-.9zm-2 4.8c-.6 0-1.1.5-1.1 1.1s.5 1.1 1.1 1.1 1.1-.5 1.1-1.1-.5-1.1-1.1-1.1z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M18.6 3.4c1.2-.2 2.3.7 2.3 1.9v10.7c0 1.6-1.3 2.9-2.9 2.9s-2.9-1.3-2.9-2.9c0-1.6 1.3-2.9 2.9-2.9.4 0 .8.1 1.1.2V9.2c0-.1-.1-.1-.1-.1l-6.3 1.3c-.5.1-.9-.2-1-.7-.1-.5.2-.9.7-1l6.3-1.3c.2 0 .3 0 .5 0V5.2c0-.1-.1-.1-.1-.1l-6.3 1.3c-.5.1-.9-.2-1-.7-.1-.5.2-.9.7-1l6.3-1.3zm-.6 11.5c-.6 0-1.1.5-1.1 1.1s.5 1.1 1.1 1.1 1.1-.5 1.1-1.1-.5-1.1-1.1-1.1z" fill="currentColor"/><path d="M7.3 5.4c.3-.5 1-.5 1.4 0l.1.1.1.5.1.2c.2.4.6.8 1.1 1l.4.2c.6.2.7 1.1.1 1.4l-.1 0-.5.2c-.4.2-.8.5-1 .9l-.1.2-.2.4c-.2.6-1.1.7-1.4.1l0-.1-.2-.4c-.2-.5-.5-.8-.9-1l-.2-.1-.4-.2c-.7-.2-.7-1.2 0-1.4l.4-.2.2-.1c.4-.2.8-.6 1-.9l.2-.4.1-.5z" fill="currentColor"/></svg>
-        </div>
-        <div class="station-info">
-          <div class="station-name">${s.name}</div>
-          <div class="station-meta">${s.genre} · ${s.country}</div>
-        </div>
-        <div class="station-status">
-          ${isActive && isLoading ? '<div class="spinner"></div>' : ''}
-          ${isActive && isPlaying ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : ''}
-          <button class="fav-btn ${isFav ? 'is-fav' : ''}" data-id="${s.id}" aria-label="Избранное">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 4.5C12 4.5 13.5 2 16 2C19.5 2 21 5 21 7C21 11 15 15 12 20.5C9 15 3 11 3 7C3 5 4.5 2 8 2C10.5 2 12 4.5 12 4.5Z" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
-          </button>
-        </div>`;
-      div.addEventListener('click', (e) => {
+      div.innerHTML = '<div class="station-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 12.1c.5 0 .9.4.9.9v5c0 1.6-1.3 2.9-2.9 2.9S3.1 19.6 3.1 18c0-1.6 1.3-2.9 2.9-2.9.4 0 .8.1 1.1.2v-2.3c0-.5.4-.9.9-.9zm-2 4.8c-.6 0-1.1.5-1.1 1.1s.5 1.1 1.1 1.1 1.1-.5 1.1-1.1-.5-1.1-1.1-1.1z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M18.6 3.4c1.2-.2 2.3.7 2.3 1.9v10.7c0 1.6-1.3 2.9-2.9 2.9s-2.9-1.3-2.9-2.9c0-1.6 1.3-2.9 2.9-2.9.4 0 .8.1 1.1.2V9.2c0-.1-.1-.1-.1-.1l-6.3 1.3c-.5.1-.9-.2-1-.7-.1-.5.2-.9.7-1l6.3-1.3c.2 0 .3 0 .5 0V5.2c0-.1-.1-.1-.1-.1l-6.3 1.3c-.5.1-.9-.2-1-.7-.1-.5.2-.9.7-1l6.3-1.3zm-.6 11.5c-.6 0-1.1.5-1.1 1.1s.5 1.1 1.1 1.1 1.1-.5 1.1-1.1-.5-1.1-1.1-1.1z" fill="currentColor"/><path d="M7.3 5.4c.3-.5 1-.5 1.4 0l.1.1.1.5.1.2c.2.4.6.8 1.1 1l.4.2c.6.2.7 1.1.1 1.4l-.1 0-.5.2c-.4.2-.8.5-1 .9l-.1.2-.2.4c-.2.6-1.1.7-1.4.1l0-.1-.2-.4c-.2-.5-.5-.8-.9-1l-.2-.1-.4-.2c-.7-.2-.7-1.2 0-1.4l.4-.2.2-.1c.4-.2.8-.6 1-.9l.2-.4.1-.5z" fill="currentColor"/></svg></div><div class="station-info"><div class="station-name">' + s.name + '</div><div class="station-meta">' + s.genre + ' &middot; ' + s.country + '</div></div><div class="station-status">' + (isActive && isLoading ? '<div class="spinner"></div>' : '') + (isActive && isPlaying ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : '') + '<button class="fav-btn ' + (isFav ? 'is-fav' : '') + '" data-id="' + s.id + '" aria-label="Избранное"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 4.5C12 4.5 13.5 2 16 2C19.5 2 21 5 21 7C21 11 15 15 12 20.5C9 15 3 11 3 7C3 5 4.5 2 8 2C10.5 2 12 4.5 12 4.5Z" fill="' + (isFav ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button></div>';
+      div.addEventListener('click', function(e) {
         if (e.target.closest('.fav-btn')) { e.stopPropagation(); toggleFavorite(s.id); return; }
         selectStation(s);
       });
       stationList.appendChild(div);
     });
   }
-
   function toggleFavorite(id) {
     favorites.has(id) ? favorites.delete(id) : favorites.add(id);
     saveFavorites(); renderStations();
   }
-
   function selectStation(s) {
     if (loadTimeout) clearTimeout(loadTimeout);
     stopNowPlaying();
@@ -661,14 +485,13 @@
     audio.volume = volume;
     renderStations();
   }
-
   function tryNextUrl() {
     if (!currentStation) return;
     currentUrlIndex++;
     if (currentUrlIndex < currentStation.urls.length) {
       npStatus.textContent = 'Пробуем резервный сервер...';
       audio.src = currentStation.urls[currentUrlIndex];
-      audio.load(); audio.play().catch(()=>{});
+      audio.load(); audio.play().catch(function(){});
     } else {
       isLoading = false; isPlaying = false;
       npStatus.textContent = 'Поток недоступен. Попробуйте позже.';
@@ -676,16 +499,14 @@
       updatePlayIcon(); renderStations();
     }
   }
-
   function playAudio() {
     if (!currentStation) return;
     isLoading = true; npStatus.textContent = 'Подключение...'; renderStations();
     audio.volume = volume; audio.muted = isMuted;
     if (loadTimeout) clearTimeout(loadTimeout);
-    loadTimeout = setTimeout(() => { if (isLoading) tryNextUrl(); }, 8000);
-    audio.play().catch(() => { isLoading = false; npStatus.textContent = 'Ошибка воспроизведения'; updatePlayIcon(); renderStations(); });
+    loadTimeout = setTimeout(function() { if (isLoading) tryNextUrl(); }, 8000);
+    audio.play().catch(function() { isLoading = false; npStatus.textContent = 'Ошибка воспроизведения'; updatePlayIcon(); renderStations(); });
   }
-
   function pauseAudio() {
     if (loadTimeout) clearTimeout(loadTimeout);
     audio.pause(); isPlaying = false; isLoading = false;
@@ -693,7 +514,6 @@
     if (currentStation) npStatus.textContent = 'Пауза';
     updatePlayIcon(); renderStations();
   }
-
   function togglePlay() {
     if (!currentStation) {
       const f = getFilteredStations();
@@ -702,29 +522,24 @@
     }
     isPlaying ? pauseAudio() : playAudio();
   }
-
   function updatePlayIcon() {
     if (isPlaying) { iconPlay.style.display = 'none'; iconPause.style.display = 'block'; }
     else { iconPlay.style.display = 'block'; iconPause.style.display = 'none'; }
   }
-
   function prevStation() {
     const f = getFilteredStations(); if (!f.length) return;
-    let i = currentStation ? f.findIndex(s => s.id === currentStation.id) : 0;
+    let i = currentStation ? f.findIndex(function(s) { return s.id === currentStation.id; }) : 0;
     selectStation(f[(i - 1 + f.length) % f.length]); setTimeout(playAudio, 300);
   }
-
   function nextStation() {
     const f = getFilteredStations(); if (!f.length) return;
-    let i = currentStation ? f.findIndex(s => s.id === currentStation.id) : -1;
+    let i = currentStation ? f.findIndex(function(s) { return s.id === currentStation.id; }) : -1;
     selectStation(f[(i + 1) % f.length]); setTimeout(playAudio, 300);
   }
-
   function stopNowPlaying() {
     if (nowPlayingInterval) { clearInterval(nowPlayingInterval); nowPlayingInterval = null; }
     npTrack.textContent = '';
   }
-
   async function fetchNowPlaying() {
     if (!currentStation || !currentStation.api) { npTrack.textContent = ''; return; }
     try {
@@ -742,14 +557,12 @@
       }
     } catch(e) { npTrack.textContent = ''; }
   }
-
   function startNowPlaying() {
     stopNowPlaying();
     fetchNowPlaying();
     nowPlayingInterval = setInterval(fetchNowPlaying, 20000);
   }
-
-  audio.addEventListener('playing', () => {
+  audio.addEventListener('playing', function() {
     if (loadTimeout) clearTimeout(loadTimeout);
     isLoading = false; isPlaying = true; liveBadge.style.display = 'flex';
     if (currentStation) {
@@ -758,31 +571,29 @@
     }
     updatePlayIcon(); renderStations();
   });
-  audio.addEventListener('waiting', () => { isLoading = true; npStatus.textContent = 'Буферизация...'; renderStations(); });
-  audio.addEventListener('error', () => { if (loadTimeout) clearTimeout(loadTimeout); tryNextUrl(); });
-  audio.addEventListener('stalled', () => { if (isPlaying) npStatus.textContent = 'Потеря сигнала...'; });
-  audio.addEventListener('ended', () => { isPlaying = false; isLoading = false; liveBadge.style.display = 'none'; stopNowPlaying(); updatePlayIcon(); renderStations(); });
-  audio.addEventListener('pause', () => { if (!isPlaying) stopNowPlaying(); });
-
+  audio.addEventListener('waiting', function() { isLoading = true; npStatus.textContent = 'Буферизация...'; renderStations(); });
+  audio.addEventListener('error', function() { if (loadTimeout) clearTimeout(loadTimeout); tryNextUrl(); });
+  audio.addEventListener('stalled', function() { if (isPlaying) npStatus.textContent = 'Потеря сигнала...'; });
+  audio.addEventListener('ended', function() { isPlaying = false; isLoading = false; liveBadge.style.display = 'none'; stopNowPlaying(); updatePlayIcon(); renderStations(); });
+  audio.addEventListener('pause', function() { if (!isPlaying) stopNowPlaying(); });
   document.getElementById('btn-play').addEventListener('click', togglePlay);
   document.getElementById('btn-prev').addEventListener('click', prevStation);
   document.getElementById('btn-next').addEventListener('click', nextStation);
-  document.getElementById('btn-mute').addEventListener('click', () => {
+  document.getElementById('btn-mute').addEventListener('click', function() {
     isMuted = !isMuted; audio.muted = isMuted;
     document.getElementById('icon-volon').style.display = isMuted ? 'none' : 'block';
     document.getElementById('icon-voloff').style.display = isMuted ? 'block' : 'none';
   });
-  document.getElementById('volume-slider').addEventListener('input', (e) => {
+  document.getElementById('volume-slider').addEventListener('input', function(e) {
     volume = e.target.value / 100; audio.volume = volume;
     if (volume > 0 && isMuted) { isMuted = false; audio.muted = false; document.getElementById('icon-volon').style.display = 'block'; document.getElementById('icon-voloff').style.display = 'none'; }
   });
   searchInput.addEventListener('input', renderStations);
-  catTabs.addEventListener('click', (e) => {
+  catTabs.addEventListener('click', function(e) {
     const btn = e.target.closest('.cat-btn'); if (!btn) return;
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.cat-btn').forEach(function(b) { b.classList.remove('active'); });
     btn.classList.add('active'); currentCat = btn.dataset.cat; renderStations();
   });
-
   audio.volume = volume; renderStations();
 })();
 </script>
