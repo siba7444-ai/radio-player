@@ -1,601 +1,1503 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Радио</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: #E8E6E1;
-    color: #222;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 24px 16px;
-  }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Winamp — Радио</title>
+    <style>
+        /* ── сброс & база ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f2ece1; /* тёплый бежевый */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            padding: 20px;
+            user-select: none;
+        }
 
-  .radio-panel {
-    background: linear-gradient(135deg, #D4855A 0%, #C45C3A 100%);
-    border-radius: 20px;
-    padding: 28px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 8px 32px rgba(196,92,58,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
-    color: #fff;
-    width: 100%;
-    max-width: 520px;
-    min-height: 600px;
-  }
-  .radio-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-  .radio-header h2 {
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: -0.3px;
-    color: #fff;
-  }
-  .live-badge {
-    display: none;
-    align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #ff4444;
-    background: rgba(255,68,68,0.12);
-    padding: 3px 8px;
-    border-radius: 20px;
-  }
-  .live-dot {
-    width: 6px; height: 6px;
-    background: #ff4444;
-    border-radius: 50%;
-    animation: pulse 1.5s infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.8); }
-  }
-  .search-box { position: relative; margin-bottom: 14px; }
-  .search-box input {
-    width: 100%;
-    padding: 10px 12px 10px 36px;
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 12px;
-    background: rgba(0,0,0,0.15);
-    color: #fff;
-    font-size: 14px;
-    outline: none;
-    transition: all 0.2s ease;
-  }
-  .search-box input:focus { border-color: rgba(255,255,255,0.5); background: rgba(0,0,0,0.25); }
-  .search-box input::placeholder { color: rgba(255,255,255,0.5); }
-  .search-icon {
-    position: absolute;
-    left: 10px; top: 50%;
-    transform: translateY(-50%);
-    color: rgba(255,255,255,0.6);
-    pointer-events: none;
-  }
-  .category-tabs {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 14px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-  .category-tabs::-webkit-scrollbar { display: none; }
-  .cat-btn {
-    padding: 6px 14px;
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 20px;
-    background: transparent;
-    color: rgba(255,255,255,0.8);
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-  }
-  .cat-btn:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.1); }
-  .cat-btn.active { background: #fff; color: #C45C3A; border-color: #fff; font-weight: 600; }
-  .station-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    max-height: 340px;
-    overflow-y: auto;
-    margin-bottom: 16px;
-  }
-  .station-list::-webkit-scrollbar { width: 4px; }
-  .station-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 4px; }
-  .station-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-    background: rgba(0,0,0,0.1);
-  }
-  .station-item:hover { background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.15); }
-  .station-item.active { background: rgba(0,0,0,0.25); border-color: rgba(255,255,255,0.4); }
-  .station-item.playing {
-    background: rgba(34,197,94,0.15);
-    border-color: rgba(34,197,94,0.5);
-  }
-  .station-item.loading {
-    border-color: rgba(234,179,8,0.5);
-    background: rgba(234,179,8,0.1);
-  }
-  .station-item.error {
-    border-color: rgba(239,68,68,0.4);
-    background: rgba(239,68,68,0.1);
-  }
-  .station-icon {
-    width: 34px; height: 34px;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: rgba(255,255,255,0.7);
-  }
-  .station-item.active .station-icon,
-  .station-item.playing .station-icon {
-    color: #fff;
-    background: rgba(255,255,255,0.3);
-  }
-  .station-info { flex: 1; min-width: 0; }
-  .station-name {
-    font-size: 14px;
-    font-weight: 500;
-    color: #fff;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .station-meta {
-    font-size: 11px;
-    color: rgba(255,255,255,0.6);
-    margin-top: 2px;
-  }
-  .station-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .eq-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 2px;
-    height: 14px;
-  }
-  .eq-bar {
-    width: 3px;
-    background: #4ade80;
-    border-radius: 1px;
-    animation: eq 0.6s ease-in-out infinite alternate;
-  }
-  .eq-bar:nth-child(1) { height: 4px; animation-delay: 0s; }
-  .eq-bar:nth-child(2) { height: 8px; animation-delay: 0.15s; }
-  .eq-bar:nth-child(3) { height: 6px; animation-delay: 0.3s; }
-  .eq-bar:nth-child(4) { height: 10px; animation-delay: 0.1s; }
-  @keyframes eq {
-    0% { height: 3px; }
-    100% { height: 12px; }
-  }
-  .spinner {
-    width: 14px; height: 14px;
-    border: 2px solid rgba(255,255,255,0.2);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .player-panel {
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 16px;
-    padding: 16px;
-    background: rgba(0,0,0,0.15);
-    margin-top: auto;
-  }
-  .now-playing {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
-  .np-cover {
-    width: 46px; height: 46px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255,255,255,0.7);
-    flex-shrink: 0;
-  }
-  .np-info { flex: 1; min-width: 0; }
-  .np-station {
-    font-size: 15px;
-    font-weight: 600;
-    color: #fff;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .np-track {
-    font-size: 13px;
-    color: rgba(255,255,255,0.75);
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-height: 18px;
-  }
-  .np-status {
-    font-size: 12px;
-    color: rgba(255,255,255,0.55);
-    margin-top: 2px;
-  }
-  .controls-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    margin-bottom: 14px;
-  }
-  .ctrl-btn {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.3);
-    background: transparent;
-    color: rgba(255,255,255,0.85);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .ctrl-btn:hover {
-    border-color: #fff;
-    color: #fff;
-    background: rgba(255,255,255,0.15);
-  }
-  .ctrl-btn.primary {
-    width: 52px; height: 52px;
-    background: #fff;
-    color: #C45C3A;
-    border: none;
-  }
-  .ctrl-btn.primary:hover { opacity: 0.9; }
-  .volume-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .volume-slider {
-    flex: 1;
-    -webkit-appearance: none;
-    appearance: none;
-    height: 4px;
-    border-radius: 2px;
-    background: rgba(255,255,255,0.25);
-    outline: none;
-  }
-  .volume-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: #fff;
-    cursor: pointer;
-  }
-  .volume-slider::-moz-range-thumb {
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: #fff;
-    cursor: pointer;
-    border: none;
-  }
-  .vol-icon-btn {
-    background: none;
-    border: none;
-    color: rgba(255,255,255,0.7);
-    cursor: pointer;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .vol-icon-btn:hover { color: #fff; }
-  .empty-state {
-    text-align: center;
-    padding: 32px 12px;
-    color: rgba(255,255,255,0.5);
-    font-size: 13px;
-  }
-  .fav-btn {
-    background: none;
-    border: none;
-    color: rgba(255,255,255,0.4);
-    cursor: pointer;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-  }
-  .fav-btn:hover { color: rgba(255,255,255,0.7); }
-  .fav-btn.is-fav { color: #ff6b6b; }
-</style>
-<base target="_blank">
+        /* ── главное окно Winamp (светлая тема) ── */
+        .winamp {
+            width: 560px;
+            max-width: 100%;
+            background: #fcf6ef; /* светлый бежевый */
+            border-radius: 10px 10px 8px 8px;
+            box-shadow: 0 12px 48px rgba(120, 90, 60, 0.25), inset 0 0 0 1px #e5d7c8;
+            overflow: hidden;
+            position: relative;
+        }
+        .winamp::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 8px 8px 6px 6px;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px rgba(200, 160, 120, 0.08);
+            z-index: 2;
+        }
+
+        /* ── заголовок ── */
+        .titlebar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px 6px 12px;
+            background: linear-gradient(180deg, #e6d7c6 0%, #dccbba 100%);
+            border-bottom: 1px solid #cbb8a7;
+            cursor: default;
+        }
+        .titlebar .logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+            color: #2d6b2d;
+            text-shadow: 0 0 6px rgba(45, 107, 45, 0.15);
+        }
+        .titlebar .logo svg {
+            display: block;
+            width: 20px;
+            height: 20px;
+            color: #2d6b2d;
+        }
+        .titlebar .logo span {
+            background: #2d6b2d;
+            color: #fcf6ef;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 1px 6px;
+            border-radius: 3px;
+            letter-spacing: 0.5px;
+            margin-left: 2px;
+        }
+        .titlebar .title-text {
+            flex: 1;
+            font-size: 12px;
+            color: #4d3e2f;
+            letter-spacing: 0.3px;
+            margin-left: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .titlebar .win-controls {
+            display: flex;
+            gap: 6px;
+            margin-left: auto;
+        }
+        .titlebar .win-controls button {
+            background: none;
+            border: none;
+            color: #6b5b4b;
+            font-size: 14px;
+            line-height: 1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.15s;
+            font-weight: 600;
+        }
+        .titlebar .win-controls button:hover {
+            background: rgba(0, 0, 0, 0.06);
+            color: #1a1a1a;
+        }
+        .titlebar .win-controls .close:hover {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        /* ── визуализация (спектр) ── */
+        .vis-wrap {
+            background: #ede3d6;
+            padding: 6px 10px 4px 10px;
+            border-bottom: 1px solid #d5c7b8;
+            position: relative;
+        }
+        .vis-wrap canvas {
+            display: block;
+            width: 100%;
+            height: 60px;
+            border-radius: 4px;
+            background: #faf3eb;
+            image-rendering: pixelated;
+        }
+        .vis-label {
+            position: absolute;
+            right: 18px;
+            top: 12px;
+            font-size: 8px;
+            font-weight: 700;
+            color: rgba(45, 107, 45, 0.2);
+            letter-spacing: 1px;
+            pointer-events: none;
+            text-transform: uppercase;
+        }
+
+        /* ── инфо о треке под визуализацией ── */
+        .track-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 12px 4px 12px;
+            background: #f7efe5;
+            border-bottom: 1px solid #d5c7b8;
+            min-height: 36px;
+        }
+        .track-info .np-station {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2c241b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 0 1 auto;
+            max-width: 180px;
+        }
+        .track-info .np-track {
+            font-size: 12px;
+            color: #5f4f3f;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+        .track-info .np-status {
+            font-size: 10px;
+            color: #8b7b6b;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-align: right;
+            min-width: 70px;
+        }
+        .track-info .live-badge {
+            display: none;
+            align-items: center;
+            gap: 4px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #2d6b2d;
+            background: rgba(45, 107, 45, 0.10);
+            padding: 2px 10px 2px 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(45, 107, 45, 0.20);
+            flex-shrink: 0;
+        }
+        .track-info .live-dot {
+            width: 5px;
+            height: 5px;
+            background: #2d6b2d;
+            border-radius: 50%;
+            animation: pulse 1.2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(0.7); }
+        }
+
+        /* ── прогресс ── */
+        .progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 12px 2px 12px;
+            background: #ede3d6;
+        }
+        .progress-wrap .time {
+            font-size: 10px;
+            color: #6b5b4b;
+            font-variant-numeric: tabular-nums;
+            min-width: 38px;
+        }
+        .progress-wrap .time.total {
+            text-align: right;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #ddd0c2;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #cbb8a7;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3a7a3a, #4caf50);
+            border-radius: 4px;
+            transition: width 0.08s linear;
+            position: relative;
+        }
+        .progress-bar .fill::after {
+            content: '';
+            position: absolute;
+            right: -2px;
+            top: -2px;
+            width: 10px;
+            height: 10px;
+            background: #4caf50;
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .progress-bar:hover .fill::after {
+            opacity: 1;
+        }
+
+        /* ── панель управления ── */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px 6px 10px;
+            background: #f2eade;
+            border-bottom: 1px solid #d5c7b8;
+            flex-wrap: wrap;
+        }
+        .controls .ctrl-group {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .controls .ctrl-group+ .ctrl-group {
+            margin-left: 8px;
+        }
+        .ctrl-btn {
+            background: #e6d7c6;
+            border: none;
+            border-radius: 4px;
+            color: #4d3e2f;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.12s;
+            font-size: 14px;
+            box-shadow: inset 0 -2px 0 #cbb8a7, inset 0 1px 0 #f5ede5;
+        }
+        .ctrl-btn:hover {
+            background: #dfcebc;
+            color: #1a1a1a;
+        }
+        .ctrl-btn:active {
+            transform: scale(0.94);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .ctrl-btn.primary {
+            background: #c8dcc8;
+            color: #2d6b2d;
+            box-shadow: inset 0 -2px 0 #a8b8a8, inset 0 1px 0 #e8f0e8;
+        }
+        .ctrl-btn.primary:hover {
+            background: #b5d0b5;
+            color: #1a4a1a;
+        }
+        .ctrl-btn.primary.active {
+            background: #b0c8b0;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .ctrl-btn svg {
+            display: block;
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+        .ctrl-btn .label {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .volume-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+            flex: 0 1 120px;
+        }
+        .volume-wrap .vol-icon {
+            color: #6b5b4b;
+            font-size: 14px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+        }
+        .volume-wrap .vol-icon:hover {
+            color: #2c241b;
+        }
+        .volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: #d5c7b8;
+            outline: none;
+            flex: 1;
+            min-width: 40px;
+        }
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4caf50;
+            cursor: pointer;
+            box-shadow: 0 0 6px rgba(76, 175, 80, 0.2);
+        }
+        .volume-slider::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4caf50;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* ── кнопки доп. функций ── */
+        .extra-controls {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 2px 10px 6px 10px;
+            background: #ede3d6;
+            border-bottom: 1px solid #d5c7b8;
+            flex-wrap: wrap;
+        }
+        .extra-controls .xbtn {
+            background: none;
+            border: none;
+            color: #6b5b4b;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.12s;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .extra-controls .xbtn:hover {
+            color: #2c241b;
+            background: rgba(0,0,0,0.04);
+        }
+        .extra-controls .xbtn.active {
+            color: #2d6b2d;
+        }
+        .extra-controls .xbtn svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
+        }
+        .extra-controls .xbtn .badge {
+            background: #ddd0c2;
+            color: #5f4f3f;
+            font-size: 8px;
+            padding: 0 6px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+        .extra-controls .xbtn.active .badge {
+            background: #b5d0b5;
+            color: #1a4a1a;
+        }
+        .extra-controls .spacer {
+            flex: 1;
+        }
+        .extra-controls .cat-indicator {
+            font-size: 9px;
+            color: #8b7b6b;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── плейлист ── */
+        .playlist-wrap {
+            background: #fcf6ef;
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 4px 0 4px 0;
+            border-top: 1px solid #ddd0c2;
+            scrollbar-width: thin;
+            scrollbar-color: #cbb8a7 #ede3d6;
+        }
+        .playlist-wrap::-webkit-scrollbar {
+            width: 5px;
+        }
+        .playlist-wrap::-webkit-scrollbar-track {
+            background: #ede3d6;
+        }
+        .playlist-wrap::-webkit-scrollbar-thumb {
+            background: #cbb8a7;
+            border-radius: 4px;
+        }
+        .playlist-wrap::-webkit-scrollbar-thumb:hover {
+            background: #b5a492;
+        }
+
+        .pl-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px 5px 12px;
+            cursor: pointer;
+            transition: 0.08s;
+            border-left: 2px solid transparent;
+            font-size: 12px;
+            color: #4d3e2f;
+            position: relative;
+        }
+        .pl-item:hover {
+            background: rgba(0,0,0,0.03);
+            color: #1a1a1a;
+        }
+        .pl-item.active {
+            background: rgba(45, 107, 45, 0.05);
+            border-left-color: #4caf50;
+            color: #1a1a1a;
+        }
+        .pl-item.playing {
+            background: rgba(45, 107, 45, 0.08);
+            border-left-color: #4caf50;
+            color: #1a1a1a;
+        }
+        .pl-item.loading {
+            border-left-color: #b8860b;
+            background: rgba(184, 134, 11, 0.06);
+        }
+        .pl-item.error {
+            border-left-color: #c0392b;
+            background: rgba(192, 57, 43, 0.06);
+        }
+        .pl-item .pl-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #8b7b6b;
+            font-size: 12px;
+        }
+        .pl-item.active .pl-icon,
+        .pl-item.playing .pl-icon {
+            color: #4caf50;
+            background: rgba(76, 175, 80, 0.08);
+        }
+        .pl-item .pl-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .pl-item .pl-name {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pl-item .pl-meta {
+            font-size: 10px;
+            color: #7a6a5a;
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pl-item.playing .pl-meta {
+            color: #4d3e2f;
+        }
+        .pl-item .pl-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .pl-item .pl-status .eq-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 14px;
+        }
+        .pl-item .pl-status .eq-bars .bar {
+            width: 3px;
+            background: #4caf50;
+            border-radius: 1px;
+            animation: eq 0.5s ease-in-out infinite alternate;
+        }
+        .pl-item .pl-status .eq-bars .bar:nth-child(1) { height: 4px; animation-delay: 0s; }
+        .pl-item .pl-status .eq-bars .bar:nth-child(2) { height: 8px; animation-delay: 0.15s; }
+        .pl-item .pl-status .eq-bars .bar:nth-child(3) { height: 6px; animation-delay: 0.3s; }
+        .pl-item .pl-status .eq-bars .bar:nth-child(4) { height: 10px; animation-delay: 0.1s; }
+        @keyframes eq {
+            0% { height: 3px; }
+            100% { height: 12px; }
+        }
+        .pl-item .pl-status .spinner {
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-top-color: #4caf50;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .pl-item .fav-btn {
+            background: none;
+            border: none;
+            color: #b5a492;
+            cursor: pointer;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.12s;
+            flex-shrink: 0;
+        }
+        .pl-item .fav-btn:hover {
+            color: #6b5b4b;
+        }
+        .pl-item .fav-btn.is-fav {
+            color: #c0392b;
+        }
+        .pl-item .fav-btn.is-fav:hover {
+            color: #e74c3c;
+        }
+
+        .pl-empty {
+            text-align: center;
+            padding: 32px 12px;
+            color: #8b7b6b;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        /* ── поиск и категории ── */
+        .search-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px 4px 10px;
+            background: #ede3d6;
+            border-bottom: 1px solid #d5c7b8;
+            flex-wrap: wrap;
+        }
+        .search-area .search-box {
+            flex: 1;
+            min-width: 100px;
+            position: relative;
+        }
+        .search-area .search-box input {
+            width: 100%;
+            padding: 5px 8px 5px 28px;
+            border: 1px solid #d5c7b8;
+            border-radius: 6px;
+            background: #fcf6ef;
+            color: #2c241b;
+            font-size: 11px;
+            outline: none;
+            transition: 0.15s;
+        }
+        .search-area .search-box input:focus {
+            border-color: #b5a492;
+            background: #fffcf5;
+        }
+        .search-area .search-box input::placeholder {
+            color: #b5a492;
+        }
+        .search-area .search-box .s-icon {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b5a492;
+            font-size: 12px;
+            pointer-events: none;
+        }
+        .search-area .cat-tabs {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            padding-bottom: 2px;
+            flex: 0 1 auto;
+            max-width: 60%;
+        }
+        .search-area .cat-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        .search-area .cat-btn {
+            padding: 3px 10px;
+            border: 1px solid #d5c7b8;
+            border-radius: 12px;
+            background: transparent;
+            color: #6b5b4b;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.12s;
+            letter-spacing: 0.3px;
+        }
+        .search-area .cat-btn:hover {
+            border-color: #b5a492;
+            color: #2c241b;
+        }
+        .search-area .cat-btn.active {
+            background: #4caf50;
+            color: #fcf6ef;
+            border-color: #4caf50;
+        }
+        .search-area .cat-btn .star {
+            color: #c0392b;
+            margin-right: 2px;
+        }
+
+        /* ── адаптив ── */
+        @media (max-width: 580px) {
+            .winamp { width: 100%; border-radius: 6px; }
+            .titlebar .title-text { font-size: 10px; max-width: 80px; }
+            .track-info .np-station { max-width: 100px; font-size: 11px; }
+            .track-info .np-track { font-size: 10px; }
+            .controls .ctrl-btn { width: 30px; height: 30px; font-size: 12px; }
+            .controls .ctrl-btn svg { width: 14px; height: 14px; }
+            .volume-wrap { flex: 0 1 80px; }
+            .search-area .cat-tabs { max-width: 100%; }
+            .playlist-wrap { max-height: 240px; }
+        }
+        @media (max-width: 420px) {
+            .track-info { flex-wrap: wrap; gap: 2px; padding: 4px 8px; }
+            .track-info .np-station { max-width: 100%; flex: 1 1 100%; }
+            .track-info .np-track { flex: 1 1 60%; }
+            .track-info .np-status { font-size: 9px; min-width: 50px; }
+            .controls { gap: 2px; padding: 4px 6px; }
+            .controls .ctrl-group+.ctrl-group { margin-left: 4px; }
+            .volume-wrap { flex: 0 1 60px; }
+            .extra-controls .xbtn { font-size: 9px; padding: 2px 5px; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="radio-panel">
-  <div class="radio-header">
-    <h2>Радио</h2>
-    <div class="live-badge" id="live-badge">
-      <span class="live-dot"></span>
-      <span>Live</span>
-    </div>
-  </div>
-  <div class="search-box">
-    <span class="search-icon">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M11.5 3C16.1944 3 20 6.80558 20 11.5C20 13.523 19.2933 15.381 18.1132 16.8404L21.1364 19.8636C21.4879 20.2151 21.4879 20.7849 21.1364 21.1364C20.7849 21.4879 20.2151 21.4879 19.8636 21.1364L16.8404 18.1132C15.381 19.2933 13.523 20 11.5 20C6.80558 20 3 16.1944 3 11.5C3 6.80558 6.80558 3 11.5 3ZM11.5 18.2C15.2003 18.2 18.2 15.2003 18.2 11.5C18.2 7.79969 15.2003 4.8 11.5 4.8C7.79969 4.8 4.8 7.79969 4.8 11.5C4.8 15.2003 7.79969 18.2 11.5 18.2Z" fill="currentColor"/></svg>
-    </span>
-    <input type="text" id="search-input" placeholder="Найти станцию...">
-  </div>
-  <div class="category-tabs" id="category-tabs">
-    <button class="cat-btn active" data-cat="all">Все</button>
-    <button class="cat-btn" data-cat="pop">Поп</button>
-    <button class="cat-btn" data-cat="rock">Рок</button>
-    <button class="cat-btn" data-cat="electronic">Электро</button>
-    <button class="cat-btn" data-cat="jazz">Джаз</button>
-    <button class="cat-btn" data-cat="classical">Классика</button>
-    <button class="cat-btn" data-cat="news">Новости</button>
-    <button class="cat-btn" data-cat="favorites">★ Избранное</button>
-  </div>
-  <div class="station-list" id="station-list"></div>
-  <div class="player-panel" id="player-panel">
-    <div class="now-playing">
-      <div class="np-cover">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 12.1c.5 0 .9.4.9.9v5c0 1.6-1.3 2.9-2.9 2.9S3.1 19.6 3.1 18c0-1.6 1.3-2.9 2.9-2.9.4 0 .8.1 1.1.2v-2.3c0-.5.4-.9.9-.9zm-2 4.8c-.6 0-1.1.5-1.1 1.1s.5 1.1 1.1 1.1 1.1-.5 1.1-1.1-.5-1.1-1.1-1.1z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M18.6 3.4c1.2-.2 2.3.7 2.3 1.9v10.7c0 1.6-1.3 2.9-2.9 2.9s-2.9-1.3-2.9-2.9c0-1.6 1.3-2.9 2.9-2.9.4 0 .8.1 1.1.2V9.2c0-.1-.1-.1-.1-.1l-6.3 1.3c-.5.1-.9-.2-1-.7-.1-.5.2-.9.7-1l6.3-1.3c.2 0 .3 0 .5 0V5.2c0-.1-.1-.1-.1-.1l-6.3 1.3c-.5.1-.9-.2-1-.7-.1-.5.2-.9.7-1l6.3-1.3zm-.6 11.5c-.6 0-1.1.5-1.1 1.1s.5 1.1 1.1 1.1 1.1-.5 1.1-1.1-.5-1.1-1.1-1.1z" fill="currentColor"/><path d="M7.3 5.4c.3-.5 1-.5 1.4 0l.1.1.1.5.1.2c.2.4.6.8 1.1 1l.4.2c.6.2.7 1.1.1 1.4l-.1 0-.5.2c-.4.2-.8.5-1 .9l-.1.2-.2.4c-.2.6-1.1.7-1.4.1l0-.1-.2-.4c-.2-.5-.5-.8-.9-1l-.2-.1-.4-.2c-.7-.2-.7-1.2 0-1.4l.4-.2.2-.1c.4-.2.8-.6 1-.9l.2-.4.1-.5z" fill="currentColor"/></svg>
-      </div>
-      <div class="np-info">
-        <div class="np-station" id="np-station">Выберите станцию</div>
-        <div class="np-track" id="np-track"></div>
-        <div class="np-status" id="np-status">Нажмите Play для начала</div>
-      </div>
-    </div>
-    <div class="controls-row">
-      <button class="ctrl-btn" id="btn-prev" aria-label="Предыдущая">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17.8 4.3c.4-.4 1-.4 1.4 0 .4.4.4 1 0 1.4l-6.3 6.3 6.3 6.3c.4.4.4 1 0 1.4-.4.4-1 .4-1.4 0l-7-7c-.4-.4-.4-1 0-1.4l7-7z" fill="currentColor"/><path d="M11.8 4.3c.4-.4 1-.4 1.4 0 .4.4.4 1 0 1.4L7 12l6.3 6.3c.4.4.4 1 0 1.4-.4.4-1 .4-1.4 0l-7-7c-.4-.4-.4-1 0-1.4l7-7z" fill="currentColor"/></svg>
-      </button>
-      <button class="ctrl-btn primary" id="btn-play" aria-label="Play">
-        <svg id="icon-play" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7.8 3.1c.5 0 1 .1 1.4.4l10.4 6.1c1.3.8 1.7 2.5 1 3.8-.2.4-.6.7-1 1L9.2 20.5c-1.3.8-3 .3-3.8-1-.3-.4-.4-.9-.4-1.4V5.9c0-1.5 1.2-2.8 2.8-2.8zm-1 15c0 .2 0 .3.1.5.3.5.8.6 1.3.4l10.4-6.1c.1-.1.2-.2.3-.3.3-.5.1-1.1-.3-1.4L8.3 5.1c-.2-.1-.3-.1-.5-.1-.5 0-.9.4-.9.9v12.2z" fill="currentColor"/></svg>
-        <svg id="icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:none;"><rect x="9" y="8.5" width="1.5" height="7" fill="currentColor"/><rect x="13.5" y="8.5" width="1.5" height="7" fill="currentColor"/></svg>
-      </button>
-      <button class="ctrl-btn" id="btn-next" aria-label="Следующая">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6.2 4.3c-.4-.4-1-.4-1.4 0-.4.4-.4 1 0 1.4l6.3 6.3-6.3 6.3c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l7-7c.4-.4.4-1 0-1.4l-7-7z" fill="currentColor"/><path d="M12.2 4.3c-.4-.4-1-.4-1.4 0-.4.4-.4 1 0 1.4L17 12l-6.3 6.3c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l7-7c.4-.4.4-1 0-1.4l-7-7z" fill="currentColor"/></svg>
-      </button>
-    </div>
-    <div class="volume-row">
-      <button class="vol-icon-btn" id="btn-mute" aria-label="Громкость">
-        <svg id="icon-volon" width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.8 2.8c1.8-1.5 4.6-.3 4.6 2.1v14.3c0 2.4-2.9 3.7-4.7 2.1l-3.7-3.4h-.2c-1.5 0-2.8-1.3-2.8-2.8V9.5c0-1.5 1.2-2.8 2.8-2.8h.1l3.7-3.7.2-.2zm2.9 2.1c0-.9-1.1-1.3-1.7-.7l-4.2 4.2-.9 0c-.6 0-1 .5-1 1v5.6c0 .1 0 .2.1.3.1.5.4.8.9.9h.1.9l4.2 3.9c.6.6 1.5.2 1.6-.6v-14.6z" fill="currentColor"/><path d="M18.5 7.2c.4-.4 1-.4 1.3 0 1.3 1.3 2 3.1 2 5 0 1.9-.7 3.7-2 5-.3.4-.9.4-1.3 0-.3-.3-.3-.9 0-1.3 1-1 1.5-2.3 1.5-3.7 0-1.4-.5-2.7-1.5-3.7-.3-.4-.3-.9 0-1.3z" fill="currentColor"/><path d="M15.3 8.9c.4-.4.9-.4 1.3 0 .9.9 1.4 2.1 1.4 3.3 0 1.3-.5 2.5-1.4 3.4-.3.4-.9.4-1.2 0-.4-.3-.4-.9-.1-1.3.6-.6.9-1.3.9-2.1 0-.8-.3-1.5-.9-2.1-.3-.3-.3-.8 0-1.2z" fill="currentColor"/></svg>
-        <svg id="icon-voloff" width="16" height="16" viewBox="0 0 24 24" fill="none" style="display:none;"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.9 2.8c1.8-1.5 4.6-.3 4.6 2.1v14.3c0 2.4-2.9 3.7-4.7 2.1l-3.7-3.4h-.2c-1.5 0-2.8-1.3-2.8-2.8V9.5c0-1.5 1.2-2.8 2.8-2.8h.1l3.7-3.7.2-.2zm2.9 2.1c0-.9-1.1-1.3-1.7-.7l-4.2 4.2-.9 0c-.6 0-1 .5-1 1v5.6c0 .1 0 .2.1.3.1.5.4.8.9.9h.1.9l4.2 3.9c.6.6 1.5.2 1.6-.6v-14.6z" fill="currentColor"/><path d="M20.5 8.9c.4-.4.9-.4 1.3 0 .4.4.4.9 0 1.3l-2 2 2 2c.4.4.4.9 0 1.3-.4.4-.9.4-1.3 0l-2-2-2 2c-.4.4-.9.4-1.3 0-.4-.4-.4-.9 0-1.3l2-2-2-2c-.4-.3-.4-.9 0-1.2l2-2 2 2z" fill="currentColor"/></svg>
-      </button>
-      <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="70">
-    </div>
-  </div>
-  <audio id="audio-player" preload="none" crossorigin="anonymous"></audio>
-</div>
+    <div class="winamp" id="app">
 
-<script>
-(function() {
-  const stations = [
-    { id: 1, name: "Radio Paradise", genre: "Эклектика", cat: "pop", urls: ["https://stream.radioparadise.com/aac-128", "https://stream.radioparadise.com/mp3-192"], country: "США", api: "rp", apiId: "0" },
-    { id: 2, name: "SomaFM — Indie Pop Rocks", genre: "Indie Pop", cat: "pop", urls: ["https://ice.somafm.com/indiepop", "https://ice5.somafm.com/indiepop-128-mp3"], country: "США", api: "somafm", apiId: "indiepop" },
-    { id: 3, name: "Радио 7 на семи холмах", genre: "Хиты", cat: "pop", urls: ["https://radio7.hostingradio.ru:8040/radio7256.mp3"], country: "Россия", api: null },
-    { id: 4, name: "Радио Record", genre: "Dance / Electronic", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/rr_main96.aacp"], country: "Россия", api: null },
-    { id: 5, name: "Радио Монте Карло", genre: "Лёгкие хиты", cat: "pop", urls: ["https://montecarlo.hostingradio.ru/montecarlo96.aacp"], country: "Россия", api: null },
-    { id: 6, name: "Радио Симфония FM", genre: "Классика / Симфония", cat: "classical", urls: ["https://radiorecord.hostingradio.ru/symph96.aacp"], country: "Россия", api: null },
-    { id: 7, name: "Радио Европа плюс", genre: "Хиты", cat: "pop", urls: ["http://ep128server.streamr.ru:8030/ep128", "http://emgregion.hostingradio.ru:8064/moscow.europaplus.mp3"], country: "Россия", api: null },
-    { id: 8, name: "Русское радио", genre: "Русские хиты", cat: "pop", urls: ["http://dfm.hostingradio.ru/rusradio128.mp3"], country: "Россия", api: null }
-  ];
-  let currentStation = null, isPlaying = false, isLoading = false;
-  let currentCat = 'all', favorites = new Set();
-  let volume = 0.7, isMuted = false;
-  let currentUrlIndex = 0, loadTimeout = null;
-  let nowPlayingInterval = null;
-  const audio = document.getElementById('audio-player');
-  const stationList = document.getElementById('station-list');
-  const searchInput = document.getElementById('search-input');
-  const npStation = document.getElementById('np-station');
-  const npTrack = document.getElementById('np-track');
-  const npStatus = document.getElementById('np-status');
-  const iconPlay = document.getElementById('icon-play');
-  const iconPause = document.getElementById('icon-pause');
-  const liveBadge = document.getElementById('live-badge');
-  const catTabs = document.getElementById('category-tabs');
-  try {
-    const saved = localStorage.getItem('radio_favorites_v2');
-    if (saved) favorites = new Set(JSON.parse(saved));
-  } catch(e) {}
-  function saveFavorites() {
-    try { localStorage.setItem('radio_favorites_v2', JSON.stringify(Array.from(favorites))); } catch(e) {}
-  }
-  function getFilteredStations() {
-    const q = searchInput.value.toLowerCase().trim();
-    return stations.filter(function(s) {
-      const ms = !q || s.name.toLowerCase().includes(q) || s.genre.toLowerCase().includes(q) || s.country.toLowerCase().includes(q);
-      const mc = currentCat === 'all' || (currentCat === 'favorites' ? favorites.has(s.id) : s.cat === currentCat);
-      return ms && mc;
-    });
-  }
-  function renderStations() {
-    const filtered = getFilteredStations();
-    stationList.innerHTML = '';
-    if (!filtered.length) { stationList.innerHTML = '<div class="empty-state">Станции не найдены</div>'; return; }
-    filtered.forEach(function(s) {
-      const isActive = currentStation && currentStation.id === s.id;
-      const isFav = favorites.has(s.id);
-      let cls = '';
-      if (isActive && isPlaying) cls = ' playing';
-      else if (isActive && isLoading) cls = ' loading';
-      else if (isActive && !isPlaying && !isLoading) cls = ' error';
-      else if (isActive) cls = ' active';
-      const div = document.createElement('div');
-      div.className = 'station-item' + cls;
-      div.innerHTML = '<div class="station-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 12.1c.5 0 .9.4.9.9v5c0 1.6-1.3 2.9-2.9 2.9S3.1 19.6 3.1 18c0-1.6 1.3-2.9 2.9-2.9.4 0 .8.1 1.1.2v-2.3c0-.5.4-.9.9-.9zm-2 4.8c-.6 0-1.1.5-1.1 1.1s.5 1.1 1.1 1.1 1.1-.5 1.1-1.1-.5-1.1-1.1-1.1z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M18.6 3.4c1.2-.2 2.3.7 2.3 1.9v10.7c0 1.6-1.3 2.9-2.9 2.9s-2.9-1.3-2.9-2.9c0-1.6 1.3-2.9 2.9-2.9.4 0 .8.1 1.1.2V9.2c0-.1-.1-.1-.1-.1l-6.3 1.3c-.5.1-.9-.2-1-.7-.1-.5.2-.9.7-1l6.3-1.3c.2 0 .3 0 .5 0V5.2c0-.1-.1-.1-.1-.1l-6.3 1.3c-.5.1-.9-.2-1-.7-.1-.5.2-.9.7-1l6.3-1.3zm-.6 11.5c-.6 0-1.1.5-1.1 1.1s.5 1.1 1.1 1.1 1.1-.5 1.1-1.1-.5-1.1-1.1-1.1z" fill="currentColor"/><path d="M7.3 5.4c.3-.5 1-.5 1.4 0l.1.1.1.5.1.2c.2.4.6.8 1.1 1l.4.2c.6.2.7 1.1.1 1.4l-.1 0-.5.2c-.4.2-.8.5-1 .9l-.1.2-.2.4c-.2.6-1.1.7-1.4.1l0-.1-.2-.4c-.2-.5-.5-.8-.9-1l-.2-.1-.4-.2c-.7-.2-.7-1.2 0-1.4l.4-.2.2-.1c.4-.2.8-.6 1-.9l.2-.4.1-.5z" fill="currentColor"/></svg></div><div class="station-info"><div class="station-name">' + s.name + '</div><div class="station-meta">' + s.genre + ' &middot; ' + s.country + '</div></div><div class="station-status">' + (isActive && isLoading ? '<div class="spinner"></div>' : '') + (isActive && isPlaying ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : '') + '<button class="fav-btn ' + (isFav ? 'is-fav' : '') + '" data-id="' + s.id + '" aria-label="Избранное"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 4.5C12 4.5 13.5 2 16 2C19.5 2 21 5 21 7C21 11 15 15 12 20.5C9 15 3 11 3 7C3 5 4.5 2 8 2C10.5 2 12 4.5 12 4.5Z" fill="' + (isFav ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button></div>';
-      div.addEventListener('click', function(e) {
-        if (e.target.closest('.fav-btn')) { e.stopPropagation(); toggleFavorite(s.id); return; }
-        selectStation(s);
-      });
-      stationList.appendChild(div);
-    });
-  }
-  function toggleFavorite(id) {
-    favorites.has(id) ? favorites.delete(id) : favorites.add(id);
-    saveFavorites(); renderStations();
-  }
-  function selectStation(s) {
-    if (loadTimeout) clearTimeout(loadTimeout);
-    stopNowPlaying();
-    currentStation = s; currentUrlIndex = 0;
-    isLoading = false; isPlaying = false;
-    npStation.textContent = s.name;
-    npTrack.textContent = '';
-    npStatus.textContent = 'Загрузка...';
-    audio.src = s.urls[0];
-    audio.volume = volume;
-    renderStations();
-  }
-  function tryNextUrl() {
-    if (!currentStation) return;
-    currentUrlIndex++;
-    if (currentUrlIndex < currentStation.urls.length) {
-      npStatus.textContent = 'Пробуем резервный сервер...';
-      audio.src = currentStation.urls[currentUrlIndex];
-      audio.load(); audio.play().catch(function(){});
-    } else {
-      isLoading = false; isPlaying = false;
-      npStatus.textContent = 'Поток недоступен. Попробуйте позже.';
-      liveBadge.style.display = 'none';
-      updatePlayIcon(); renderStations();
-    }
-  }
-  function playAudio() {
-    if (!currentStation) return;
-    isLoading = true; npStatus.textContent = 'Подключение...'; renderStations();
-    audio.volume = volume; audio.muted = isMuted;
-    if (loadTimeout) clearTimeout(loadTimeout);
-    loadTimeout = setTimeout(function() { if (isLoading) tryNextUrl(); }, 8000);
-    audio.play().catch(function() { isLoading = false; npStatus.textContent = 'Ошибка воспроизведения'; updatePlayIcon(); renderStations(); });
-  }
-  function pauseAudio() {
-    if (loadTimeout) clearTimeout(loadTimeout);
-    audio.pause(); isPlaying = false; isLoading = false;
-    liveBadge.style.display = 'none';
-    if (currentStation) npStatus.textContent = 'Пауза';
-    updatePlayIcon(); renderStations();
-  }
-  function togglePlay() {
-    if (!currentStation) {
-      const f = getFilteredStations();
-      if (f.length) { selectStation(f[0]); setTimeout(playAudio, 300); }
-      return;
-    }
-    isPlaying ? pauseAudio() : playAudio();
-  }
-  function updatePlayIcon() {
-    if (isPlaying) { iconPlay.style.display = 'none'; iconPause.style.display = 'block'; }
-    else { iconPlay.style.display = 'block'; iconPause.style.display = 'none'; }
-  }
-  function prevStation() {
-    const f = getFilteredStations(); if (!f.length) return;
-    let i = currentStation ? f.findIndex(function(s) { return s.id === currentStation.id; }) : 0;
-    selectStation(f[(i - 1 + f.length) % f.length]); setTimeout(playAudio, 300);
-  }
-  function nextStation() {
-    const f = getFilteredStations(); if (!f.length) return;
-    let i = currentStation ? f.findIndex(function(s) { return s.id === currentStation.id; }) : -1;
-    selectStation(f[(i + 1) % f.length]); setTimeout(playAudio, 300);
-  }
-  function stopNowPlaying() {
-    if (nowPlayingInterval) { clearInterval(nowPlayingInterval); nowPlayingInterval = null; }
-    npTrack.textContent = '';
-  }
-  async function fetchNowPlaying() {
-    if (!currentStation || !currentStation.api) { npTrack.textContent = ''; return; }
-    try {
-      if (currentStation.api === 'rp') {
-        const res = await fetch('https://api.radioparadise.com/api/now_playing?chan=' + currentStation.apiId);
-        const data = await res.json();
-        if (data && data.song) npTrack.textContent = data.artist + ' — ' + data.song;
-      } else if (currentStation.api === 'somafm') {
-        const res = await fetch('https://api.somafm.com/songs/' + currentStation.apiId + '.json');
-        const data = await res.json();
-        if (data && data.songs && data.songs.length) {
-          const s = data.songs[0];
-          npTrack.textContent = s.artist + ' — ' + s.title;
-        }
-      }
-    } catch(e) { npTrack.textContent = ''; }
-  }
-  function startNowPlaying() {
-    stopNowPlaying();
-    fetchNowPlaying();
-    nowPlayingInterval = setInterval(fetchNowPlaying, 20000);
-  }
-  audio.addEventListener('playing', function() {
-    if (loadTimeout) clearTimeout(loadTimeout);
-    isLoading = false; isPlaying = true; liveBadge.style.display = 'flex';
-    if (currentStation) {
-      npStatus.textContent = 'В эфире · ' + currentStation.genre;
-      startNowPlaying();
-    }
-    updatePlayIcon(); renderStations();
-  });
-  audio.addEventListener('waiting', function() { isLoading = true; npStatus.textContent = 'Буферизация...'; renderStations(); });
-  audio.addEventListener('error', function() { if (loadTimeout) clearTimeout(loadTimeout); tryNextUrl(); });
-  audio.addEventListener('stalled', function() { if (isPlaying) npStatus.textContent = 'Потеря сигнала...'; });
-  audio.addEventListener('ended', function() { isPlaying = false; isLoading = false; liveBadge.style.display = 'none'; stopNowPlaying(); updatePlayIcon(); renderStations(); });
-  audio.addEventListener('pause', function() { if (!isPlaying) stopNowPlaying(); });
-  document.getElementById('btn-play').addEventListener('click', togglePlay);
-  document.getElementById('btn-prev').addEventListener('click', prevStation);
-  document.getElementById('btn-next').addEventListener('click', nextStation);
-  document.getElementById('btn-mute').addEventListener('click', function() {
-    isMuted = !isMuted; audio.muted = isMuted;
-    document.getElementById('icon-volon').style.display = isMuted ? 'none' : 'block';
-    document.getElementById('icon-voloff').style.display = isMuted ? 'block' : 'none';
-  });
-  document.getElementById('volume-slider').addEventListener('input', function(e) {
-    volume = e.target.value / 100; audio.volume = volume;
-    if (volume > 0 && isMuted) { isMuted = false; audio.muted = false; document.getElementById('icon-volon').style.display = 'block'; document.getElementById('icon-voloff').style.display = 'none'; }
-  });
-  searchInput.addEventListener('input', renderStations);
-  catTabs.addEventListener('click', function(e) {
-    const btn = e.target.closest('.cat-btn'); if (!btn) return;
-    document.querySelectorAll('.cat-btn').forEach(function(b) { b.classList.remove('active'); });
-    btn.classList.add('active'); currentCat = btn.dataset.cat; renderStations();
-  });
-  audio.volume = volume; renderStations();
-})();
-</script>
+        <!-- ─── Title Bar ─── -->
+        <div class="titlebar">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M9 8v8" />
+                    <path d="M15 8v8" />
+                    <path d="M12 8v8" />
+                </svg>
+                Winamp
+                <span>v2</span>
+            </div>
+            <div class="title-text" id="win-title">Радио-плеер</div>
+            <div class="win-controls">
+                <button aria-label="Свернуть" onclick="window.blur()">─</button>
+                <button aria-label="Закрыть" class="close" onclick="window.close()">✕</button>
+            </div>
+        </div>
+
+        <!-- ─── Визуализация ─── -->
+        <div class="vis-wrap">
+            <canvas id="spectrum" height="60"></canvas>
+            <div class="vis-label">● SPECTRUM</div>
+        </div>
+
+        <!-- ─── Инфо о треке ─── -->
+        <div class="track-info">
+            <span class="np-station" id="np-station">Выберите станцию</span>
+            <span class="np-track" id="np-track"></span>
+            <span class="np-status" id="np-status">Готов</span>
+            <div class="live-badge" id="live-badge">
+                <span class="live-dot"></span> LIVE
+            </div>
+        </div>
+
+        <!-- ─── Прогресс ─── -->
+        <div class="progress-wrap">
+            <span class="time" id="time-elapsed">0:00</span>
+            <div class="progress-bar" id="progress-bar">
+                <div class="fill" id="progress-fill" style="width:0%;"></div>
+            </div>
+            <span class="time total" id="time-total">0:00</span>
+        </div>
+
+        <!-- ─── Основные контролы ─── -->
+        <div class="controls">
+            <div class="ctrl-group">
+                <button class="ctrl-btn" id="btn-prev" aria-label="Предыдущая">
+                    <svg viewBox="0 0 24 24"><polygon points="19,4 9,10 9,4 5,4 5,20 9,20 9,14 19,20 "/></svg>
+                </button>
+                <button class="ctrl-btn primary" id="btn-play" aria-label="Воспроизвести">
+                    <svg id="icon-play" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21 "/></svg>
+                    <svg id="icon-pause" viewBox="0 0 24 24" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                </button>
+                <button class="ctrl-btn" id="btn-stop" aria-label="Стоп">
+                    <svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14"/></svg>
+                </button>
+                <button class="ctrl-btn" id="btn-next" aria-label="Следующая">
+                    <svg viewBox="0 0 24 24"><polygon points="5,4 15,10 15,4 19,4 19,20 15,20 15,14 5,20 "/></svg>
+                </button>
+            </div>
+
+            <div class="ctrl-group" style="margin-left:6px;">
+                <button class="ctrl-btn" id="btn-shuffle" aria-label="Перемешать">
+                    <svg viewBox="0 0 24 24"><path d="M16,3L22,9L16,15L14,13L18,9L14,5L16,3ZM10,5L6,9L10,13L8,15L2,9L8,3L10,5ZM14,19L16,21L22,15L16,9L14,11L18,15L14,19ZM2,15L8,21L10,19L6,15L10,11L8,9L2,15Z"/></svg>
+                </button>
+                <button class="ctrl-btn" id="btn-repeat" aria-label="Повтор">
+                    <svg viewBox="0 0 24 24"><path d="M17,2L22,7L17,12L15,10L18,7L15,4L17,2ZM7,2L2,7L7,12L9,10L6,7L9,4L7,2ZM14,22L12,20L16,16L12,12L14,10L18,16L14,22ZM10,22L8,20L12,16L8,12L10,10L6,16L10,22Z"/></svg>
+                </button>
+            </div>
+
+            <div class="volume-wrap">
+                <button class="vol-icon" id="btn-mute" aria-label="Звук">
+                    <svg id="icon-volon" viewBox="0 0 24 24" width="16" height="16"><path d="M3,9H7L12,4V20L7,15H3V9Z M16,10.5C16,11.7 15.4,12.8 14.5,13.5V7.5C15.4,8.2 16,9.3 16,10.5Z"/><path d="M19,10.5C19,13.2 17.5,15.5 15.5,16.7V4.3C17.5,5.5 19,7.8 19,10.5Z"/></svg>
+                    <svg id="icon-voloff" viewBox="0 0 24 24" width="16" height="16" style="display:none;"><path d="M3,9H7L12,4V20L7,15H3V9Z M16,10.5C16,11.7 15.4,12.8 14.5,13.5V7.5C15.4,8.2 16,9.3 16,10.5Z"/><path d="M20,10.5L22,8.5L20,6.5L18,8.5L16,6.5L14,8.5L16,10.5L14,12.5L16,14.5L18,12.5L20,14.5L22,12.5L20,10.5Z"/></svg>
+                </button>
+                <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="70" />
+            </div>
+        </div>
+
+        <!-- ─── Доп. кнопки и категории ─── -->
+        <div class="extra-controls">
+            <button class="xbtn" id="btn-eq" aria-label="Эквалайзер">🎛 EQ</button>
+            <button class="xbtn active" id="btn-pl" aria-label="Плейлист">📋 PL</button>
+            <span class="spacer"></span>
+            <span class="cat-indicator" id="cat-indicator">все</span>
+        </div>
+
+        <!-- ─── Поиск + категории ─── -->
+        <div class="search-area">
+            <div class="search-box">
+                <span class="s-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Поиск станции..." />
+            </div>
+            <div class="cat-tabs" id="category-tabs">
+                <button class="cat-btn active" data-cat="all">Все</button>
+                <button class="cat-btn" data-cat="pop">Поп</button>
+                <button class="cat-btn" data-cat="rock">Рок</button>
+                <button class="cat-btn" data-cat="electronic">Электро</button>
+                <button class="cat-btn" data-cat="jazz">Джаз</button>
+                <button class="cat-btn" data-cat="classical">Классика</button>
+                <button class="cat-btn" data-cat="news">Новости</button>
+                <button class="cat-btn" data-cat="favorites"><span class="star">★</span>Избранное</button>
+            </div>
+        </div>
+
+        <!-- ─── Плейлист ─── -->
+        <div class="playlist-wrap" id="playlist-wrap">
+            <div class="pl-empty">Загрузка станций...</div>
+        </div>
+
+        <!-- ─── Аудио ─── -->
+        <audio id="audio-player" preload="none" crossorigin="anonymous"></audio>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── Данные станций ───
+            const stations = [{
+                id: 1,
+                name: "Radio Paradise",
+                genre: "Эклектика",
+                cat: "pop",
+                urls: ["https://stream.radioparadise.com/aac-128", "https://stream.radioparadise.com/mp3-192"],
+                country: "США",
+                api: "rp",
+                apiId: "0"
+            }, {
+                id: 2,
+                name: "SomaFM — Indie Pop Rocks",
+                genre: "Indie Pop",
+                cat: "pop",
+                urls: ["https://ice.somafm.com/indiepop", "https://ice5.somafm.com/indiepop-128-mp3"],
+                country: "США",
+                api: "somafm",
+                apiId: "indiepop"
+            }, {
+                id: 3,
+                name: "Радио 7 на семи холмах",
+                genre: "Хиты",
+                cat: "pop",
+                urls: ["https://radio7.hostingradio.ru:8040/radio7256.mp3"],
+                country: "Россия",
+                api: null
+            }, {
+                id: 4,
+                name: "Радио Record",
+                genre: "Dance / Electronic",
+                cat: "electronic",
+                urls: ["https://radiorecord.hostingradio.ru/rr_main96.aacp"],
+                country: "Россия",
+                api: null
+            }, {
+                id: 5,
+                name: "Радио Монте Карло",
+                genre: "Лёгкие хиты",
+                cat: "pop",
+                urls: ["https://montecarlo.hostingradio.ru/montecarlo96.aacp"],
+                country: "Россия",
+                api: null
+            }, {
+                id: 6,
+                name: "Радио Симфония FM",
+                genre: "Классика / Симфония",
+                cat: "classical",
+                urls: ["https://radiorecord.hostingradio.ru/symph96.aacp"],
+                country: "Россия",
+                api: null
+            }, {
+                id: 7,
+                name: "Радио Европа плюс",
+                genre: "Хиты",
+                cat: "pop",
+                urls: ["http://ep128server.streamr.ru:8030/ep128", "http://emgregion.hostingradio.ru:8064/moscow.europaplus"
+                        .mp3
+                    ],
+                country: "Россия",
+                api: null
+            }, {
+                id: 8,
+                name: "Русское радио",
+                genre: "Русские хиты",
+                cat: "pop",
+                urls: ["http://dfm.hostingradio.ru/rusradio128.mp3"],
+                country: "Россия",
+                api: null
+            }];
+
+            // ─── Состояние ───
+            let currentStation = null;
+            let isPlaying = false;
+            let isLoading = false;
+            let currentCat = 'all';
+            let favorites = new Set();
+            let volume = 0.7;
+            let isMuted = false;
+            let currentUrlIndex = 0;
+            let loadTimeout = null;
+            let nowPlayingInterval = null;
+            let progressInterval = null;
+            let shuffleMode = false;
+            let repeatMode = false;
+            let playlistOrder = [];
+            let currentPlaylistIndex = -1;
+
+            // ─── DOM ───
+            const audio = document.getElementById('audio-player');
+            const stationListEl = document.getElementById('playlist-wrap');
+            const searchInput = document.getElementById('search-input');
+            const npStation = document.getElementById('np-station');
+            const npTrack = document.getElementById('np-track');
+            const npStatus = document.getElementById('np-status');
+            const liveBadge = document.getElementById('live-badge');
+            const iconPlay = document.getElementById('icon-play');
+            const iconPause = document.getElementById('icon-pause');
+            const iconVolon = document.getElementById('icon-volon');
+            const iconVoloff = document.getElementById('icon-voloff');
+            const volumeSlider = document.getElementById('volume-slider');
+            const progressFill = document.getElementById('progress-fill');
+            const timeElapsed = document.getElementById('time-elapsed');
+            const timeTotal = document.getElementById('time-total');
+            const progressBar = document.getElementById('progress-bar');
+            const catIndicator = document.getElementById('cat-indicator');
+            const canvas = document.getElementById('spectrum');
+            const ctx = canvas.getContext('2d');
+            const winTitle = document.getElementById('win-title');
+
+            // ─── Избранное ───
+            try {
+                const saved = localStorage.getItem('radio_favorites_v2');
+                if (saved) favorites = new Set(JSON.parse(saved));
+            } catch (e) {}
+
+            function saveFavorites() {
+                try { localStorage.setItem('radio_favorites_v2', JSON.stringify(Array.from(favorites))); } catch (e) {}
+            }
+
+            // ─── Спектр ───
+            let analyser = null;
+            let dataArray = null;
+            let animFrame = null;
+            let audioContext = null;
+
+            function initSpectrum() {
+                if (!audioContext) {
+                    try {
+                        audioContext = new(window.AudioContext || window.webkitAudioContext)();
+                    } catch (e) { return; }
+                }
+                if (audioContext.state === 'suspended') audioContext.resume();
+                try {
+                    const source = audioContext.createMediaElementSource(audio);
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 128;
+                    source.connect(analyser);
+                    analyser.connect(audioContext.destination);
+                    dataArray = new Uint8Array(analyser.frequencyBinCount);
+                    drawSpectrum();
+                } catch (e) {
+                    analyser = null;
+                }
+            }
+
+            function drawSpectrum() {
+                if (!analyser) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    const w = canvas.width,
+                        h = canvas.height;
+                    const barCount = 32;
+                    const barW = Math.floor((w - 4) / barCount) - 2;
+                    const now = Date.now() / 1000;
+                    for (let i = 0; i < barCount; i++) {
+                        const val = 0.2 + 0.8 * (0.5 + 0.5 * Math.sin(now * (1.2 + i * 0.07) + i * 0.5));
+                        const bh = Math.max(2, val * (h - 4));
+                        const x = 2 + i * (barW + 2);
+                        const grd = ctx.createLinearGradient(x, h, x, h - bh);
+                        grd.addColorStop(0, '#6a8a6a');
+                        grd.addColorStop(1, '#4caf50');
+                        ctx.fillStyle = grd;
+                        ctx.fillRect(x, h - bh, barW, bh);
+                    }
+                    animFrame = requestAnimationFrame(drawSpectrum);
+                    return;
+                }
+                if (!analyser) return;
+                analyser.getByteFrequencyData(dataArray);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const w = canvas.width,
+                    h = canvas.height;
+                const bufferLength = analyser.frequencyBinCount;
+                const barCount = Math.min(bufferLength, 40);
+                const barW = Math.floor((w - 4) / barCount) - 2;
+                for (let i = 0; i < barCount; i++) {
+                    const idx = Math.floor(i * (bufferLength / barCount));
+                    const val = dataArray[idx] / 255;
+                    const bh = Math.max(2, val * (h - 4));
+                    const x = 2 + i * (barW + 2);
+                    const grd = ctx.createLinearGradient(x, h, x, h - bh);
+                    grd.addColorStop(0, '#6a8a6a');
+                    grd.addColorStop(1, '#4caf50');
+                    ctx.fillStyle = grd;
+                    ctx.fillRect(x, h - bh, barW, bh);
+                }
+                animFrame = requestAnimationFrame(drawSpectrum);
+            }
+
+            function resizeCanvas() {
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width || canvas.parentElement.clientWidth - 20 || 540;
+                canvas.height = 60;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            // ─── Получение списка ───
+            function getFilteredStations() {
+                const q = searchInput.value.toLowerCase().trim();
+                return stations.filter(function(s) {
+                    const ms = !q || s.name.toLowerCase().includes(q) || s.genre.toLowerCase().includes(q) || s.country
+                        .toLowerCase().includes(q);
+                    const mc = currentCat === 'all' || (currentCat === 'favorites' ? favorites.has(s.id) : s.cat ===
+                        currentCat);
+                    return ms && mc;
+                });
+            }
+
+            // ─── Рендер плейлиста ───
+            function renderPlaylist() {
+                const filtered = getFilteredStations();
+                stationListEl.innerHTML = '';
+                if (!filtered.length) {
+                    stationListEl.innerHTML = '<div class="pl-empty">Станции не найдены</div>';
+                    return;
+                }
+                playlistOrder = filtered.map(function(s) { return s.id; });
+                filtered.forEach(function(s) {
+                    const isActive = currentStation && currentStation.id === s.id;
+                    const isFav = favorites.has(s.id);
+                    let cls = '';
+                    if (isActive && isPlaying) cls = ' playing';
+                    else if (isActive && isLoading) cls = ' loading';
+                    else if (isActive && !isPlaying && !isLoading) cls = ' error';
+                    else if (isActive) cls = ' active';
+
+                    const div = document.createElement('div');
+                    div.className = 'pl-item' + (cls ? ' ' + cls : '');
+                    div.dataset.id = s.id;
+                    div.innerHTML =
+                        '<div class="pl-icon">♫</div>' +
+                        '<div class="pl-info">' +
+                        '<div class="pl-name">' + s.name + '</div>' +
+                        '<div class="pl-meta">' + s.genre + ' · ' + s.country + '</div>' +
+                        '</div>' +
+                        '<div class="pl-status">' +
+                        (isActive && isLoading ? '<div class="spinner"></div>' : '') +
+                        (isActive && isPlaying ? '<div class="eq-bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>' :
+                            '') +
+                        '<button class="fav-btn ' + (isFav ? 'is-fav' : '') + '" data-id="' + s.id + '" aria-label="Избранное">' +
+                        '<svg width="12" height="12" viewBox="0 0 24 24" fill="' + (isFav ? 'currentColor' : 'none') +
+                        '" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><polygon points="12,3 15.3,9.5 22,10.3 17,15.1 18.5,21.7 12,18.3 5.5,21.7 7,15.1 2,10.3 8.7,9.5 "/></svg>' +
+                        '</button>' +
+                        '</div>';
+                    div.addEventListener('click', function(e) {
+                        if (e.target.closest('.fav-btn')) {
+                            e.stopPropagation();
+                            toggleFavorite(s.id);
+                            return;
+                        }
+                        selectStation(s);
+                    });
+                    stationListEl.appendChild(div);
+                });
+                const catNames = {
+                    all: 'все',
+                    pop: 'поп',
+                    rock: 'рок',
+                    electronic: 'электро',
+                    jazz: 'джаз',
+                    classical: 'классика',
+                    news: 'новости',
+                    favorites: '★ избранное'
+                };
+                catIndicator.textContent = catNames[currentCat] || 'все';
+                if (currentStation) {
+                    winTitle.textContent = currentStation.name;
+                } else {
+                    winTitle.textContent = 'Радио-плеер';
+                }
+                updateFavButtons();
+            }
+
+            function updateFavButtons() {
+                document.querySelectorAll('.fav-btn').forEach(function(btn) {
+                    const id = parseInt(btn.dataset.id);
+                    const isFav = favorites.has(id);
+                    btn.classList.toggle('is-fav', isFav);
+                    const svg = btn.querySelector('svg');
+                    if (svg) {
+                        svg.setAttribute('fill', isFav ? 'currentColor' : 'none');
+                    }
+                });
+            }
+
+            // ─── Избранное ───
+            function toggleFavorite(id) {
+                favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+                saveFavorites();
+                renderPlaylist();
+            }
+
+            // ─── Выбор станции ───
+            function selectStation(s) {
+                if (loadTimeout) clearTimeout(loadTimeout);
+                stopNowPlaying();
+                if (progressInterval) { clearInterval(progressInterval);
+                    progressInterval = null; }
+                currentStation = s;
+                currentUrlIndex = 0;
+                isLoading = false;
+                isPlaying = false;
+                npStation.textContent = s.name;
+                npTrack.textContent = '';
+                npStatus.textContent = 'Загрузка...';
+                liveBadge.style.display = 'none';
+                audio.src = s.urls[0];
+                audio.volume = volume;
+                audio.muted = isMuted;
+                currentPlaylistIndex = playlistOrder.indexOf(s.id);
+                renderPlaylist();
+                progressFill.style.width = '0%';
+                timeElapsed.textContent = '0:00';
+                timeTotal.textContent = '0:00';
+                updatePlayIcon();
+                playAudio();
+            }
+
+            // ─── Попытка следующего URL ───
+            function tryNextUrl() {
+                if (!currentStation) return;
+                currentUrlIndex++;
+                if (currentUrlIndex < currentStation.urls.length) {
+                    npStatus.textContent = 'Пробуем резерв...';
+                    audio.src = currentStation.urls[currentUrlIndex];
+                    audio.load();
+                    audio.play().catch(function() {});
+                } else {
+                    isLoading = false;
+                    isPlaying = false;
+                    npStatus.textContent = 'Поток недоступен';
+                    liveBadge.style.display = 'none';
+                    updatePlayIcon();
+                    renderPlaylist();
+                }
+            }
+
+            // ─── Воспроизведение ───
+            function playAudio() {
+                if (!currentStation) {
+                    const f = getFilteredStations();
+                    if (f.length) { selectStation(f[0]); return; }
+                    return;
+                }
+                isLoading = true;
+                npStatus.textContent = 'Подключение...';
+                renderPlaylist();
+                audio.volume = volume;
+                audio.muted = isMuted;
+                if (loadTimeout) clearTimeout(loadTimeout);
+                loadTimeout = setTimeout(function() {
+                    if (isLoading) tryNextUrl();
+                }, 10000);
+                audio.play().catch(function(err) {
+                    isLoading = false;
+                    npStatus.textContent = 'Ошибка воспроизведения';
+                    updatePlayIcon();
+                    renderPlaylist();
+                });
+            }
+
+            function pauseAudio() {
+                if (loadTimeout) clearTimeout(loadTimeout);
+                audio.pause();
+                isPlaying = false;
+                isLoading = false;
+                liveBadge.style.display = 'none';
+                if (currentStation) npStatus.textContent = 'Пауза';
+                if (progressInterval) { clearInterval(progressInterval);
+                    progressInterval = null; }
+                updatePlayIcon();
+                renderPlaylist();
+                if (animFrame) { cancelAnimationFrame(animFrame);
+                    animFrame = null; }
+                if (!animFrame) drawSpectrum();
+            }
+
+            function stopAudio() {
+                if (loadTimeout) clearTimeout(loadTimeout);
+                audio.pause();
+                audio.currentTime = 0;
+                isPlaying = false;
+                isLoading = false;
+                liveBadge.style.display = 'none';
+                if (currentStation) npStatus.textContent = 'Остановлено';
+                if (progressInterval) { clearInterval(progressInterval);
+                    progressInterval = null; }
+                progressFill.style.width = '0%';
+                timeElapsed.textContent = '0:00';
+                timeTotal.textContent = '0:00';
+                updatePlayIcon();
+                renderPlaylist();
+                if (!animFrame) drawSpectrum();
+            }
+
+            function togglePlay() {
+                if (!currentStation) {
+                    const f = getFilteredStations();
+                    if (f.length) { selectStation(f[0]); return; }
+                    return;
+                }
+                if (isPlaying) {
+                    pauseAudio();
+                } else {
+                    playAudio();
+                }
+            }
+
+            // ─── Навигация ───
+            function prevStation() {
+                const f = getFilteredStations();
+                if (!f.length) return;
+                let idx = currentStation ? f.findIndex(function(s) { return s.id === currentStation.id; }) : 0;
+                if (idx < 0) idx = 0;
+                idx = (idx - 1 + f.length) % f.length;
+                selectStation(f[idx]);
+            }
+
+            function nextStation() {
+                const f = getFilteredStations();
+                if (!f.length) return;
+                let idx = currentStation ? f.findIndex(function(s) { return s.id === currentStation.id; }) : -1;
+                if (shuffleMode) {
+                    let newIdx;
+                    do {
+                        newIdx = Math.floor(Math.random() * f.length);
+                    } while (newIdx === idx && f.length > 1);
+                    idx = newIdx;
+                } else {
+                    idx = (idx + 1) % f.length;
+                }
+                selectStation(f[idx]);
+            }
+
+            // ─── Обновление иконки play ───
+            function updatePlayIcon() {
+                if (isPlaying) {
+                    iconPlay.style.display = 'none';
+                    iconPause.style.display = 'block';
+                } else {
+                    iconPlay.style.display = 'block';
+                    iconPause.style.display = 'none';
+                }
+            }
+
+            // ─── Now Playing (метаданные) ───
+            function stopNowPlaying() {
+                if (nowPlayingInterval) { clearInterval(nowPlayingInterval);
+                    nowPlayingInterval = null; }
+                npTrack.textContent = '';
+            }
+
+            async function fetchNowPlaying() {
+                if (!currentStation || !currentStation.api) { npTrack.textContent = ''; return; }
+                try {
+                    if (currentStation.api === 'rp') {
+                        const res = await fetch('https://api.radioparadise.com/api/now_playing?chan=' + currentStation
+                            .apiId);
+                        const data = await res.json();
+                        if (data && data.song) npTrack.textContent = data.artist + ' — ' + data.song;
+                    } else if (currentStation.api === 'somafm') {
+                        const res = await fetch('https://api.somafm.com/songs/' + currentStation.apiId + '.json');
+                        const data = await res.json();
+                        if (data && data.songs && data.songs.length) {
+                            const s = data.songs[0];
+                            npTrack.textContent = s.artist + ' — ' + s.title;
+                        }
+                    }
+                } catch (e) { npTrack.textContent = ''; }
+            }
+
+            function startNowPlaying() {
+                stopNowPlaying();
+                fetchNowPlaying();
+                nowPlayingInterval = setInterval(fetchNowPlaying, 20000);
+            }
+
+            // ─── Прогресс ───
+            function updateProgress() {
+                if (!audio.duration || isNaN(audio.duration) || audio.duration === Infinity) {
+                    timeTotal.textContent = '0:00';
+                    return;
+                }
+                const pct = (audio.currentTime / audio.duration) * 100;
+                progressFill.style.width = Math.min(pct, 100) + '%';
+                timeElapsed.textContent = formatTime(audio.currentTime);
+                timeTotal.textContent = formatTime(audio.duration);
+            }
+
+            function formatTime(sec) {
+                if (isNaN(sec) || sec === Infinity) return '0:00';
+                const m = Math.floor(sec / 60);
+                const s = Math.floor(sec % 60);
+                return m + ':' + (s < 10 ? '0' : '') + s;
+            }
+
+            function startProgress() {
+                if (progressInterval) clearInterval(progressInterval);
+                updateProgress();
+                progressInterval = setInterval(updateProgress, 200);
+            }
+
+            // ─── События аудио ───
+            audio.addEventListener('playing', function() {
+                if (loadTimeout) clearTimeout(loadTimeout);
+                isLoading = false;
+                isPlaying = true;
+                liveBadge.style.display = 'flex';
+                if (currentStation) {
+                    npStatus.textContent = 'В эфире · ' + currentStation.genre;
+                    startNowPlaying();
+                    startProgress();
+                }
+                updatePlayIcon();
+                renderPlaylist();
+                if (!analyser && audioContext) {
+                    try {
+                        const source = audioContext.createMediaElementSource(audio);
+                        analyser = audioContext.createAnalyser();
+                        analyser.fftSize = 128;
+                        source.connect(analyser);
+                        analyser.connect(audioContext.destination);
+                        dataArray = new Uint8Array(analyser.frequencyBinCount);
+                    } catch (e) {}
+                }
+                if (!animFrame) drawSpectrum();
+            });
+
+            audio.addEventListener('waiting', function() {
+                isLoading = true;
+                npStatus.textContent = 'Буферизация...';
+                renderPlaylist();
+            });
+
+            audio.addEventListener('error', function(e) {
+                if (loadTimeout) clearTimeout(loadTimeout);
+                if (currentStation) {
+                    tryNextUrl();
+                }
+            });
+
+            audio.addEventListener('stalled', function() {
+                if (isPlaying) npStatus.textContent = 'Потеря сигнала...';
+            });
+
+            audio.addEventListener('ended', function() {
+                isPlaying = false;
+                isLoading = false;
+                liveBadge.style.display = 'none';
+                stopNowPlaying();
+                if (progressInterval) { clearInterval(progressInterval);
+                    progressInterval = null; }
+                updatePlayIcon();
+                renderPlaylist();
+                if (repeatMode && currentStation) {
+                    audio.currentTime = 0;
+                    audio.play().catch(function() {});
+                } else {
+                    nextStation();
+                }
+            });
+
+            audio.addEventListener('pause', function() {
+                if (!isPlaying) {
+                    stopNowPlaying();
+                    if (progressInterval) { clearInterval(progressInterval);
+                        progressInterval = null; }
+                }
+            });
+
+            // ─── Прогресс-бар клик ───
+            progressBar.addEventListener('click', function(e) {
+                if (!audio.duration || isNaN(audio.duration) || audio.duration === Infinity) return;
+                const rect = progressBar.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                audio.currentTime = x * audio.duration;
+                updateProgress();
+            });
+
+            // ─── Кнопки ───
+            document.getElementById('btn-play').addEventListener('click', togglePlay);
+            document.getElementById('btn-stop').addEventListener('click', stopAudio);
+            document.getElementById('btn-prev').addEventListener('click', prevStation);
+            document.getElementById('btn-next').addEventListener('click', nextStation);
+
+            document.getElementById('btn-shuffle').addEventListener('click', function() {
+                shuffleMode = !shuffleMode;
+                this.classList.toggle('active', shuffleMode);
+            });
+
+            document.getElementById('btn-repeat').addEventListener('click', function() {
+                repeatMode = !repeatMode;
+                this.classList.toggle('active', repeatMode);
+            });
+
+            document.getElementById('btn-mute').addEventListener('click', function() {
+                isMuted = !isMuted;
+                audio.muted = isMuted;
+                iconVolon.style.display = isMuted ? 'none' : 'block';
+                iconVoloff.style.display = isMuted ? 'block' : 'none';
+            });
+
+            volumeSlider.addEventListener('input', function(e) {
+                volume = e.target.value / 100;
+                audio.volume = volume;
+                if (volume > 0 && isMuted) {
+                    isMuted = false;
+                    audio.muted = false;
+                    iconVolon.style.display = 'block';
+                    iconVoloff.style.display = 'none';
+                }
+            });
+
+            // ─── Поиск ───
+            searchInput.addEventListener('input', renderPlaylist);
+
+            // ─── Категории ───
+            document.getElementById('category-tabs').addEventListener('click', function(e) {
+                const btn = e.target.closest('.cat-btn');
+                if (!btn) return;
+                document.querySelectorAll('.cat-tabs .cat-btn').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                currentCat = btn.dataset.cat;
+                renderPlaylist();
+            });
+
+            // ─── Клавиши ───
+            document.addEventListener('keydown', function(e) {
+                if (e.target.tagName === 'INPUT') return;
+                if (e.code === 'Space') { e.preventDefault();
+                    togglePlay(); }
+                if (e.code === 'ArrowRight') { e.preventDefault();
+                    nextStation(); }
+                if (e.code === 'ArrowLeft') { e.preventDefault();
+                    prevStation(); }
+            });
+
+            // ─── Инициализация ───
+            function init() {
+                audio.volume = volume;
+                volumeSlider.value = volume * 100;
+                renderPlaylist();
+                const f = getFilteredStations();
+                if (f.length) {
+                    selectStation(f[0]);
+                }
+                if (!animFrame) drawSpectrum();
+                document.addEventListener('click', function initCtx() {
+                    if (!audioContext) {
+                        try {
+                            audioContext = new(window.AudioContext || window.webkitAudioContext)();
+                            if (audioContext.state === 'suspended') audioContext.resume();
+                        } catch (e) {}
+                    }
+                }, { once: true });
+            }
+
+            window.addEventListener('resize', function() {
+                resizeCanvas();
+                if (!animFrame) drawSpectrum();
+            });
+
+            init();
+
+            window.__radio = {
+                stations: stations,
+                currentStation: currentStation,
+                isPlaying: isPlaying,
+                favorites: favorites,
+                shuffle: shuffleMode,
+                repeat: repeatMode,
+                togglePlay: togglePlay,
+                next: nextStation,
+                prev: prevStation
+            };
+
+        })();
+    </script>
+
 </body>
 </html>
