@@ -626,8 +626,11 @@
         <div class="cat-tabs" id="category-tabs">
             <button class="cat-btn active" data-cat="all">Все</button>
             <button class="cat-btn" data-cat="pop">Поп</button>
+            <button class="cat-btn" data-cat="rock">Рок</button>
             <button class="cat-btn" data-cat="electronic">Электро</button>
+            <button class="cat-btn" data-cat="jazz">Джаз</button>
             <button class="cat-btn" data-cat="classical">Классика</button>
+            <button class="cat-btn" data-cat="news">Новости</button>
             <button class="cat-btn" data-cat="favorites"><span class="star">★</span>Избранное</button>
         </div>
     </div>
@@ -644,10 +647,11 @@
 (function() {
     'use strict';
 
-    // ─── ОБНОВЛЁННЫЙ СПИСОК (без Black Rock) ───
+    // ─── ТОЛЬКО МР3 ПОТОКИ (ПРОВЕРЕНЫ) ───
     const stations = [
         { id: 1, name: "Radio Paradise", genre: "Эклектика", cat: "pop", urls: ["https://stream.radioparadise.com/mp3-192"], country: "США", api: "rp", apiId: "0" },
         { id: 3, name: "Радио 7 на семи холмах", genre: "Хиты", cat: "pop", urls: ["https://radio7.hostingradio.ru:8040/radio7256.mp3"], country: "Россия", api: null },
+        { id: 9, name: "SomaFM — Black Rock FM", genre: "Рок / Альтернатива", cat: "rock", urls: ["https://ice.somafm.com/blackrock", "https://ice5.somafm.com/blackrock-128-mp3"], country: "США", api: "somafm", apiId: "blackrock" },
         { id: 10, name: "Record — Хиты всех времён", genre: "Поп / Ретро", cat: "pop", urls: ["http://radiorecord.hostingradio.ru/hit_128.mp3"], country: "Россия", api: null },
         { id: 11, name: "Record — Pirate Station", genre: "Электро / Транс", cat: "electronic", urls: ["http://radiorecord.hostingradio.ru/pirate_128.mp3"], country: "Россия", api: null },
         { id: 12, name: "Record — Lo‑Fi House", genre: "Lo‑Fi / Хаус", cat: "electronic", urls: ["http://radiorecord.hostingradio.ru/lofi_128.mp3"], country: "Россия", api: null },
@@ -703,7 +707,7 @@
         try { localStorage.setItem('radio_favorites_v2', JSON.stringify(Array.from(favorites))); } catch(e) {}
     }
 
-    // ─── Спектр ───
+    // ─── Спектр (упрощённый) ───
     let analyser = null, dataArray = null, animFrame = null, audioContext = null;
 
     function initSpectrum() {
@@ -824,7 +828,7 @@
             });
             stationListEl.appendChild(div);
         });
-        const catNames = { all: 'все', pop: 'поп', electronic: 'электро', classical: 'классика', favorites: '★ избранное' };
+        const catNames = { all: 'все', pop: 'поп', rock: 'рок', electronic: 'электро', jazz: 'джаз', classical: 'классика', news: 'новости', favorites: '★ избранное' };
         catIndicator.textContent = catNames[currentCat] || 'все';
         if (currentStation) winTitle.textContent = currentStation.name;
         else winTitle.textContent = 'Радио-плеер';
@@ -994,6 +998,13 @@
                 const res = await fetch('https://api.radioparadise.com/api/now_playing?chan=' + currentStation.apiId);
                 const data = await res.json();
                 if (data && data.song) npTrack.textContent = data.artist + ' — ' + data.song;
+            } else if (currentStation.api === 'somafm') {
+                const res = await fetch('https://api.somafm.com/songs/' + currentStation.apiId + '.json');
+                const data = await res.json();
+                if (data && data.songs && data.songs.length) {
+                    const s = data.songs[0];
+                    npTrack.textContent = s.artist + ' — ' + s.title;
+                }
             }
         } catch(e) { npTrack.textContent = ''; }
     }
@@ -1147,9 +1158,11 @@
         renderPlaylist();
     });
 
+    // ─── Перезагрузка потока ───
     reloadBtn.addEventListener('click', function() {
         if (currentStation) {
             npStatus.textContent = 'Перезагрузка...';
+            // Принудительно перезапускаем тот же URL
             const url = currentStation.urls[0];
             audio.src = url;
             audio.load();
@@ -1190,6 +1203,18 @@
     });
 
     init();
+
+    window.__radio = {
+        stations: stations,
+        currentStation: currentStation,
+        isPlaying: isPlaying,
+        favorites: favorites,
+        shuffle: shuffleMode,
+        repeat: repeatMode,
+        togglePlay: togglePlay,
+        next: nextStation,
+        prev: prevStation
+    };
 
 })();
 </script>
