@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Winamp — Радио (Record Style)</title>
+    <title>Winamp — Радио</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -131,12 +131,6 @@
         .rr-live .dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; animation: pulse 1.2s infinite; }
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.2;transform:scale(.7)} }
         .rr-status-txt { font-size: 11px; color: var(--muted); }
-        .rr-vis {
-            background: #ede3d6; padding: 6px 14px 4px;
-            border-bottom: 1px solid var(--border); position: relative;
-        }
-        .rr-vis canvas { display: block; width: 100%; height: 56px; border-radius: 6px; background: #faf3eb; }
-        .rr-vis-label { position: absolute; right: 20px; top: 12px; font-size: 8px; font-weight: 700; color: rgba(45,107,45,0.18); letter-spacing: 1px; pointer-events: none; text-transform: uppercase; }
         .rr-ctrls {
             display: flex; align-items: center; gap: 6px;
             padding: 8px 14px;
@@ -144,7 +138,6 @@
             border-bottom: 1px solid var(--border);
         }
         .rr-ctrls .group { display: flex; align-items: center; gap: 3px; }
-        .rr-ctrls .group+.group { margin-left: 8px; }
         .rr-btn {
             background: #e6d7c6; border: none; border-radius: 6px;
             color: #4d3e2f; width: 38px; height: 38px;
@@ -332,11 +325,6 @@
     </div>
   </div>
 
-  <div class="rr-vis">
-    <canvas id="spectrum" height="56"></canvas>
-    <div class="rr-vis-label">● SPECTRUM</div>
-  </div>
-
   <div class="rr-ctrls">
     <div class="group">
       <button class="rr-btn" id="btn-prev" title="Предыдущая">
@@ -353,14 +341,6 @@
         <svg viewBox="0 0 24 24"><polygon points="5,4 15,10 15,4 19,4 19,20 15,20 15,14 5,20"/></svg>
       </button>
     </div>
-    <div class="group">
-      <button class="rr-btn" id="btn-shuffle" title="Перемешать">
-        <svg viewBox="0 0 24 24"><path d="M16,3L22,9L16,15L14,13L18,9L14,5L16,3ZM10,5L6,9L10,13L8,15L2,9L8,3L10,5ZM14,19L16,21L22,15L16,9L14,11L18,15L14,19ZM2,15L8,21L10,19L6,15L10,11L8,9L2,15Z"/></svg>
-      </button>
-      <button class="rr-btn" id="btn-repeat" title="Повтор">
-        <svg viewBox="0 0 24 24"><path d="M17,2L22,7L17,12L15,10L18,7L15,4L17,2ZM7,2L2,7L7,12L9,10L6,7L9,4L7,2ZM14,22L12,20L16,16L12,12L14,10L18,16L14,22ZM10,22L8,20L12,16L8,12L10,10L6,16L10,22Z"/></svg>
-      </button>
-    </div>
     <div class="rr-vol-wrap">
       <button id="btn-mute" title="Звук">
         <svg id="icon-volon" viewBox="0 0 24 24" width="16" height="16"><path d="M3,9H7L12,4V20L7,15H3V9Z M16,10.5C16,11.7 15.4,12.8 14.5,13.5V7.5C15.4,8.2 16,9.3 16,10.5Z"/><path d="M19,10.5C19,13.2 17.5,15.5 15.5,16.7V4.3C17.5,5.5 19,7.8 19,10.5Z"/></svg>
@@ -371,7 +351,6 @@
   </div>
 
   <div class="rr-extra">
-    <button class="rr-xbtn active" id="btn-ch" title="Каналы">📻 Каналы</button>
     <span style="flex:1"></span>
     <span style="font-size:10px;color:#8b7b6b;" id="cat-indicator">все</span>
   </div>
@@ -417,7 +396,6 @@
   let currentStation = null, isPlaying = false, isLoading = false;
   let currentCat = 'all', favorites = new Set(), volume = 0.7, isMuted = false;
   let currentUrlIndex = 0, loadTimeout = null, nowPlayingInterval = null;
-  let shuffleMode = false, repeatMode = false;
 
   const audio = document.getElementById('audio-player');
   const channelsWrap = document.getElementById('channels-wrap');
@@ -433,52 +411,10 @@
   const iconVoloff = document.getElementById('icon-voloff');
   const volumeSlider = document.getElementById('volume-slider');
   const catIndicator = document.getElementById('cat-indicator');
-  const canvas = document.getElementById('spectrum');
-  const ctx = canvas.getContext('2d');
   const winTitle = document.getElementById('win-title');
 
   try { const saved = localStorage.getItem('radio_favorites_v2'); if (saved) favorites = new Set(JSON.parse(saved)); } catch(e){}
   function saveFav() { try { localStorage.setItem('radio_favorites_v2', JSON.stringify(Array.from(favorites))); } catch(e){} }
-
-  let analyser = null, dataArray = null, animFrame = null, audioContext = null;
-  function initSpectrum() {
-    if (!audioContext) { try { audioContext = new(window.AudioContext||window.webkitAudioContext)(); } catch(e){ return; } }
-    if (audioContext.state === 'suspended') audioContext.resume();
-    try {
-      const source = audioContext.createMediaElementSource(audio);
-      analyser = audioContext.createAnalyser(); analyser.fftSize = 128;
-      source.connect(analyser); analyser.connect(audioContext.destination);
-      dataArray = new Uint8Array(analyser.frequencyBinCount);
-    } catch(e){ analyser = null; }
-  }
-  function drawSpectrum() {
-    if (!analyser) {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      const w=canvas.width, h=canvas.height, barCount=32, barW=Math.floor((w-4)/barCount)-2, now=Date.now()/1000;
-      for(let i=0;i<barCount;i++){
-        const val=0.2+0.8*(0.5+0.5*Math.sin(now*(1.2+i*0.07)+i*0.5));
-        const bh=Math.max(2,val*(h-4)); const x=2+i*(barW+2);
-        const grd=ctx.createLinearGradient(x,h,x,h-bh);
-        grd.addColorStop(0,'#6a8a6a'); grd.addColorStop(1,'#4caf50');
-        ctx.fillStyle=grd; ctx.fillRect(x,h-bh,barW,bh);
-      }
-      animFrame=requestAnimationFrame(drawSpectrum); return;
-    }
-    analyser.getByteFrequencyData(dataArray);
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    const w=canvas.width, h=canvas.height, bufferLength=analyser.frequencyBinCount, barCount=Math.min(bufferLength,40);
-    const barW=Math.floor((w-4)/barCount)-2;
-    for(let i=0;i<barCount;i++){
-      const idx=Math.floor(i*(bufferLength/barCount)); const val=dataArray[idx]/255;
-      const bh=Math.max(2,val*(h-4)); const x=2+i*(barW+2);
-      const grd=ctx.createLinearGradient(x,h,x,h-bh);
-      grd.addColorStop(0,'#6a8a6a'); grd.addColorStop(1,'#4caf50');
-      ctx.fillStyle=grd; ctx.fillRect(x,h-bh,barW,bh);
-    }
-    animFrame=requestAnimationFrame(drawSpectrum);
-  }
-  function resizeCanvas() { const rect=canvas.getBoundingClientRect(); canvas.width=rect.width||canvas.parentElement.clientWidth-28||600; canvas.height=56; }
-  window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
   function getFiltered() {
     const q=searchInput.value.toLowerCase().trim();
@@ -564,7 +500,6 @@
     audio.pause(); isPlaying=false; isLoading=false; liveBadge.style.display='none'; disc.classList.remove('spin');
     if(currentStation) npStatus.textContent='Пауза';
     updatePlayIcon(); renderChannels();
-    if(!animFrame) drawSpectrum();
   }
   function stopAudio(){
     if(loadTimeout) clearTimeout(loadTimeout);
@@ -572,7 +507,6 @@
     liveBadge.style.display='none'; disc.classList.remove('spin');
     if(currentStation) npStatus.textContent='Остановлено';
     updatePlayIcon(); renderChannels();
-    if(!animFrame) drawSpectrum();
   }
   function togglePlay(){
     if(!currentStation){ const f=getFiltered(); if(f.length){selectStation(f[0]);} return; }
@@ -587,8 +521,7 @@
   function nextStation(){
     const f=getFiltered(); if(!f.length) return;
     let idx=currentStation?f.findIndex(s=>s.id===currentStation.id):-1;
-    if(shuffleMode){ let ni; do{ni=Math.floor(Math.random()*f.length);}while(ni===idx&&f.length>1); idx=ni; }
-    else { idx=(idx+1)%f.length; }
+    idx=(idx+1)%f.length;
     selectStation(f[idx]);
   }
 
@@ -617,16 +550,13 @@
     isLoading=false; isPlaying=true; liveBadge.style.display='flex'; disc.classList.add('spin');
     if(currentStation){ npStatus.textContent='В эфире · '+currentStation.genre; startNowPlaying(); }
     updatePlayIcon(); renderChannels();
-    if(!analyser&&audioContext){ try{ const source=audioContext.createMediaElementSource(audio); analyser=audioContext.createAnalyser(); analyser.fftSize=128; source.connect(analyser); analyser.connect(audioContext.destination); dataArray=new Uint8Array(analyser.frequencyBinCount); }catch(e){} }
-    if(!animFrame) drawSpectrum();
   });
   audio.addEventListener('waiting',function(){ isLoading=true; npStatus.textContent='Буферизация...'; renderChannels(); });
   audio.addEventListener('error',function(){ if(loadTimeout) clearTimeout(loadTimeout); if(currentStation) tryNextUrl(); });
   audio.addEventListener('stalled',function(){ if(isPlaying) npStatus.textContent='Потеря сигнала...'; });
   audio.addEventListener('ended',function(){
     isPlaying=false; isLoading=false; liveBadge.style.display='none'; disc.classList.remove('spin');
-    stopNowPlaying(); updatePlayIcon(); renderChannels();
-    if(repeatMode&&currentStation){ audio.currentTime=0; audio.play().catch(function(){}); } else { nextStation(); }
+    stopNowPlaying(); updatePlayIcon(); renderChannels(); nextStation();
   });
   audio.addEventListener('pause',function(){ if(!isPlaying){ stopNowPlaying(); } });
 
@@ -634,8 +564,6 @@
   document.getElementById('btn-stop').addEventListener('click',stopAudio);
   document.getElementById('btn-prev').addEventListener('click',prevStation);
   document.getElementById('btn-next').addEventListener('click',nextStation);
-  document.getElementById('btn-shuffle').addEventListener('click',function(){ shuffleMode=!shuffleMode; this.classList.toggle('active',shuffleMode); });
-  document.getElementById('btn-repeat').addEventListener('click',function(){ repeatMode=!repeatMode; this.classList.toggle('active',repeatMode); });
   document.getElementById('btn-mute').addEventListener('click',function(){
     isMuted=!isMuted; audio.muted=isMuted;
     iconVolon.style.display=isMuted?'none':'block'; iconVoloff.style.display=isMuted?'block':'none';
@@ -662,8 +590,6 @@
   function init(){
     audio.volume=volume; volumeSlider.value=volume*100; renderChannels();
     const f=getFiltered(); if(f.length){ selectStation(f[0]); }
-    if(!animFrame) drawSpectrum();
-    document.addEventListener('click',function initCtx(){ if(!audioContext){ try{ audioContext=new(window.AudioContext||window.webkitAudioContext)(); if(audioContext.state==='suspended') audioContext.resume(); }catch(e){} } },{once:true});
   }
   init();
 
