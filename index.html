@@ -272,19 +272,6 @@
         }
         .rr-cat:hover { border-color: var(--border2); color: var(--text); }
         .rr-cat.active { background: var(--accent2); color: var(--panel); border-color: var(--accent2); }
-        .rr-extra {
-            display: flex; align-items: center; gap: 4px;
-            padding: 4px 14px 6px;
-            background: #ede3d6;
-            border-bottom: 1px solid var(--border);
-        }
-        .rr-xbtn {
-            background: none; border: none; color: var(--muted);
-            font-size: 11px; padding: 3px 10px; border-radius: 5px;
-            cursor: pointer; transition: .12s; font-weight: 600; letter-spacing: .3px;
-        }
-        .rr-xbtn:hover { color: var(--text); background: rgba(0,0,0,0.04); }
-        .rr-xbtn.active { color: var(--accent); }
         @media (max-width: 580px) {
             .rr-channels { grid-template-columns: repeat(3, 1fr); }
             .rr-ch-name { font-size: 10px; }
@@ -301,7 +288,8 @@
 <body>
 
 <div class="rr-wrap" id="app">
-  <div class="rr-titlebar">
+
+<div class="rr-titlebar">
     <div class="rr-logo">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8v8"/><path d="M15 8v8"/><path d="M12 8v8"/></svg>
       Winamp <span>v2</span>
@@ -313,7 +301,31 @@
     </div>
   </div>
 
-  <div class="rr-now">
+<div class="rr-filter-bar">
+    <div class="rr-search">
+      <span class="s-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Поиск канала..."/>
+    </div>
+    <div class="rr-cats" id="category-tabs">
+      <button class="rr-cat active" data-cat="all">Все</button>
+      <button class="rr-cat" data-cat="pop">Поп</button>
+      <button class="rr-cat" data-cat="electronic">Электро</button>
+      <button class="rr-cat" data-cat="classical">Классика</button>
+      <button class="rr-cat" data-cat="favorites"><span style="color:#c0392b">★</span> Избранное</button>
+    </div>
+  </div>
+
+<div class="rr-channels" id="channels-wrap">
+    <div style="grid-column:1/-1;text-align:center;padding:32px 12px;color:#8b7b6b;font-size:12px;">Загрузка каналов...</div>
+
+  
+
+  
+
+  <audio id="audio-player" preload="none" crossorigin="anonymous"></audio>
+</div>
+
+<div class="rr-now">
     <div class="rr-cover" id="cover"><div class="disc" id="disc"></div></div>
     <div class="rr-meta">
       <div class="station" id="np-station">Выберите станцию</div>
@@ -325,7 +337,9 @@
     </div>
   </div>
 
-  <div class="rr-ctrls">
+
+
+<div class="rr-ctrls">
     <div class="group">
       <button class="rr-btn" id="btn-prev" title="Предыдущая">
         <svg viewBox="0 0 24 24"><polygon points="19,4 9,10 9,4 5,4 5,20 9,20 9,14 19,20"/></svg>
@@ -350,31 +364,20 @@
     </div>
   </div>
 
-  <div class="rr-extra">
-    <span style="flex:1"></span>
-    <span style="font-size:10px;color:#8b7b6b;" id="cat-indicator">все</span>
-  </div>
 
-  <div class="rr-filter-bar">
-    <div class="rr-search">
-      <span class="s-icon">🔍</span>
-      <input type="text" id="search-input" placeholder="Поиск канала..."/>
-    </div>
-    <div class="rr-cats" id="category-tabs">
-      <button class="rr-cat active" data-cat="all">Все</button>
-      <button class="rr-cat" data-cat="pop">Поп</button>
-      <button class="rr-cat" data-cat="electronic">Электро</button>
-      <button class="rr-cat" data-cat="classical">Классика</button>
-      <button class="rr-cat" data-cat="favorites"><span style="color:#c0392b">★</span> Избранное</button>
-    </div>
-  </div>
+  
 
-  <div class="rr-channels" id="channels-wrap">
-    <div style="grid-column:1/-1;text-align:center;padding:32px 12px;color:#8b7b6b;font-size:12px;">Загрузка каналов...</div>
-  </div>
+  
 
-  <audio id="audio-player" preload="none" crossorigin="anonymous"></audio>
-</div>
+  
+
+  
+
+  
+
+  
+
+  
 
 <script>
 (function(){
@@ -410,7 +413,6 @@
   const iconVolon = document.getElementById('icon-volon');
   const iconVoloff = document.getElementById('icon-voloff');
   const volumeSlider = document.getElementById('volume-slider');
-  const catIndicator = document.getElementById('cat-indicator');
   const winTitle = document.getElementById('win-title');
 
   try { const saved = localStorage.getItem('radio_favorites_v2'); if (saved) favorites = new Set(JSON.parse(saved)); } catch(e){}
@@ -456,8 +458,6 @@
       });
       channelsWrap.appendChild(btn);
     });
-    const catNames={all:'все',pop:'поп',electronic:'электро',classical:'классика',favorites:'★ избранное'};
-    catIndicator.textContent=catNames[currentCat]||'все';
     winTitle.textContent=currentStation?currentStation.name:'Радио-плеер';
   }
 
