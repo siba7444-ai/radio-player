@@ -31,7 +31,7 @@
             --shadow-inset: inset 0 0 20px rgba(200,160,120,0.08);
         }
         .rr-wrap {
-            width: 640px;
+            width: 100%; max-width: 900px;
             max-width: 100%;
             background: var(--panel);
             border-radius: 12px;
@@ -97,6 +97,7 @@
             padding: 10px 16px;
             background: #f7efe5;
             border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
         }
         .rr-cover {
             width: 64px; height: 64px; border-radius: 8px;
@@ -136,6 +137,8 @@
             padding: 8px 14px;
             background: #f2eade;
             border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .rr-ctrls .group { display: flex; align-items: center; gap: 3px; }
         .rr-btn {
@@ -155,7 +158,7 @@
         .rr-btn.primary:hover { background: #b5d0b5; color: #1a4a1a; }
         .rr-btn svg { width: 18px; height: 18px; fill: currentColor; }
         .rr-btn.primary svg { width: 20px; height: 20px; }
-        .rr-vol-wrap { display: flex; align-items: center; gap: 8px; margin-left: auto; flex: 0 1 130px; }
+        .rr-vol-wrap { display: flex; align-items: center; gap: 8px; margin-left: auto; flex: 1 1 130px; max-width: 200px; }
         .rr-vol-wrap button { background: none; border: none; color: var(--muted); font-size: 15px; cursor: pointer; padding: 4px; display: flex; align-items: center; }
         .rr-vol-wrap button:hover { color: var(--text); }
         .rr-vol-slider { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; background: var(--border); outline: none; flex: 1; min-width: 50px; }
@@ -163,11 +166,11 @@
         .rr-vol-slider::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--accent2); cursor: pointer; border: none; }
         .rr-channels {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             gap: 8px;
             padding: 12px 14px;
             background: var(--panel);
-            max-height: 320px;
+            max-height: 50vh;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--border2) #ede3d6;
@@ -250,9 +253,10 @@
             background: #ede3d6;
             border-bottom: 1px solid var(--border);
             flex-wrap: wrap;
+            justify-content: space-between;
         }
         .rr-search {
-            flex: 1; min-width: 120px; position: relative;
+            flex: 1 1 200px; min-width: 120px; position: relative;
         }
         .rr-search input {
             width: 100%; padding: 6px 10px 6px 30px;
@@ -263,7 +267,7 @@
         .rr-search input:focus { border-color: var(--border2); background: #fffcf5; }
         .rr-search input::placeholder { color: #b5a492; }
         .rr-search .s-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: #b5a492; font-size: 12px; pointer-events: none; }
-        .rr-cats { display: flex; gap: 5px; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; flex: 0 1 auto; max-width: 55%; }
+        .rr-cats { display: flex; gap: 5px; overflow-x: auto; flex-wrap: wrap; padding-bottom: 2px; flex: 1 1 auto; }
         .rr-cats::-webkit-scrollbar { display: none; }
         .rr-cat {
             padding: 4px 12px; border: 1px solid var(--border); border-radius: 14px;
@@ -273,11 +277,11 @@
         .rr-cat:hover { border-color: var(--border2); color: var(--text); }
         .rr-cat.active { background: var(--accent2); color: var(--panel); border-color: var(--accent2); }
         @media (max-width: 580px) {
-            .rr-channels { grid-template-columns: repeat(3, 1fr); }
+            .rr-channels { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
             .rr-ch-name { font-size: 10px; }
         }
         @media (max-width: 420px) {
-            .rr-channels { grid-template-columns: repeat(2, 1fr); max-height: 260px; }
+            .rr-channels { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); max-height: 260px; }
             .rr-now { padding: 8px 10px; gap: 10px; }
             .rr-cover { width: 52px; height: 52px; }
             .rr-meta .station { font-size: 13px; }
@@ -391,10 +395,11 @@
     { id: 12, name: "Lo-Fi House", genre: "Lo-Fi House", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/lofihouse96.aacp"], country: "Россия", page: "https://www.radiorecord.ru/station/lo-fi-house", api: null },
     { id: 11, name: "Pirate Station", genre: "Drum'n'Bass", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/ps96.aacp"], country: "Россия", api: null },
     { id: 13, name: "D'n'B Classics", genre: "DnB Classics", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/drumhits96.aacp"], country: "Россия", api: null },
-    { id: 10, name: "Хиты всех времён", genre: "Big Hits", cat: "pop", urls: ["https://radiorecord.hostingradio.ru/bighits96.aacp"], country: "Россия", api: null }
+    { id: 10, name: "Хиты всех времён", genre: "Big Hits", cat: "pop", urls: ["https://radiorecord.hostingradio.ru/bighits96.aacp"], country: "Россия", api: null },
+    { id: 14, name: "Наше Радио — Jazz", genre: "Jazz", cat: "jazz", urls: ["https://nashe1.hostingradio.ru/jazz-128.mp3"], country: "Россия", api: null }
   ];
 
-  const icons = { 6: '🎻', 3: '🎵', 1: '🌴', 4: '🎧', 12: '🏠', 11: '☠️', 13: '🥁', 10: '🔥' };
+  const icons = { 6: '🎻', 3: '🎵', 1: '🌴', 4: '🎧', 12: '🏠', 11: '☠️', 13: '🥁', 10: '🔥', 14: '🎷' };
 
   let currentStation = null, isPlaying = false, isLoading = false;
   let currentCat = 'all', favorites = new Set(), volume = 0.7, isMuted = false;
