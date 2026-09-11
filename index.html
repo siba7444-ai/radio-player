@@ -7,7 +7,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: #f2ece1;
+            background: #f5f0e6;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -17,18 +17,18 @@
             user-select: none;
         }
         :root {
-            --bg: #f2ece1;
-            --panel: #fcf6ef;
-            --accent: #2d6b2d;
-            --accent2: #4caf50;
-            --text: #2c241b;
-            --text2: #5f4f3f;
-            --muted: #8b7b6b;
-            --border: #d5c7b8;
-            --border2: #cbb8a7;
-            --grad-title: linear-gradient(180deg, #e6d7c6 0%, #dccbba 100%);
-            --shadow: 0 12px 48px rgba(120,90,60,0.25), inset 0 0 0 1px #e5d7c8;
-            --shadow-inset: inset 0 0 20px rgba(200,160,120,0.08);
+            --bg: #f5f0e6;
+            --panel: #faf6ef;
+            --accent: #7a9e7a;
+            --accent2: #8fbc8f;
+            --text: #4a4033;
+            --text2: #6b5d4f;
+            --muted: #9b8b7a;
+            --border: #e0d5c5;
+            --border2: #d5c8b5;
+            --grad-title: linear-gradient(180deg, #e8e0d0 0%, #ddd3c0 100%);
+            --shadow: 0 12px 48px rgba(122,158,122,0.2), inset 0 0 0 1px #e8e0d0;
+            --shadow-inset: inset 0 0 20px rgba(143,188,143,0.06);
         }
         .rr-wrap {
             width: 100%; max-width: 900px;
@@ -78,7 +78,7 @@
         .rr-title-text {
             flex: 1;
             font-size: 13px;
-            color: #4d3e2f;
+            color: #5a4f42;
             letter-spacing: 0.3px;
             white-space: nowrap;
             overflow: hidden;
@@ -86,36 +86,36 @@
         }
         .rr-win-ctrl { display: flex; gap: 6px; margin-left: auto; }
         .rr-win-ctrl button {
-            background: none; border: none; color: #6b5b4b;
+            background: none; border: none; color: #7a6f5f;
             font-size: 14px; line-height: 1; padding: 3px 8px;
             border-radius: 5px; cursor: pointer; transition: .15s; font-weight: 600;
         }
-        .rr-win-ctrl button:hover { background: rgba(0,0,0,0.06); color: #1a1a1a; }
+        .rr-win-ctrl button:hover { background: rgba(0,0,0,0.06); color: #3a3028; }
         .rr-win-ctrl .close:hover { background: #c0392b; color: #fff; }
         .rr-now {
             display: flex; align-items: center; gap: 14px;
             padding: 10px 16px;
-            background: #f7efe5;
+            background: #f0ebe0;
             border-bottom: 1px solid var(--border);
             flex-wrap: wrap;
         }
         .rr-cover {
             width: 64px; height: 64px; border-radius: 8px;
-            background: linear-gradient(135deg, #e6d7c6, #dccbba);
+            background: linear-gradient(135deg, #e8e0d0, #ddd3c0);
             display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; box-shadow: 0 2px 8px rgba(120,90,60,0.15);
+            flex-shrink: 0; box-shadow: 0 2px 8px rgba(122,158,122,0.15);
             position: relative; overflow: hidden;
         }
         .rr-cover .disc {
             width: 36px; height: 36px; border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, #4caf50, #2d6b2d);
-            box-shadow: 0 0 12px rgba(45,107,45,0.3);
+            background: radial-gradient(circle at 35% 35%, #8fbc8f, #7a9e7a);
+            box-shadow: 0 0 12px rgba(122,158,122,0.3);
             animation: spinDisc 4s linear infinite paused;
         }
         .rr-cover .disc.spin { animation-play-state: running; }
         .rr-cover .disc::after {
             content: ''; position: absolute; inset: 12px;
-            border-radius: 50%; background: #f2ece1;
+            border-radius: 50%; background: #f5f0e6;
         }
         @keyframes spinDisc { to { transform: rotate(360deg); } }
         .rr-meta { flex: 1; min-width: 0; }
@@ -125,9 +125,9 @@
         .rr-live {
             display: none; align-items: center; gap: 5px;
             font-size: 9px; font-weight: 800; text-transform: uppercase;
-            color: var(--accent); background: rgba(45,107,45,0.10);
+            color: var(--accent); background: rgba(122,158,122,0.10);
             padding: 2px 10px 2px 8px; border-radius: 12px;
-            border: 1px solid rgba(45,107,45,0.20);
+            border: 1px solid rgba(122,158,122,0.20);
         }
         .rr-live .dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; animation: pulse 1.2s infinite; }
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.2;transform:scale(.7)} }
@@ -135,34 +135,34 @@
         .rr-ctrls {
             display: flex; align-items: center; gap: 6px;
             padding: 8px 14px;
-            background: #f2eade;
+            background: #ebe5d8;
             border-bottom: 1px solid var(--border);
             flex-wrap: wrap;
             justify-content: center;
         }
         .rr-ctrls .group { display: flex; align-items: center; gap: 3px; }
         .rr-btn {
-            background: #e6d7c6; border: none; border-radius: 6px;
-            color: #4d3e2f; width: 38px; height: 38px;
+            background: #e8e0d0; border: none; border-radius: 6px;
+            color: #5a4f42; width: 38px; height: 38px;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: .12s; font-size: 15px;
-            box-shadow: inset 0 -2px 0 var(--border2), inset 0 1px 0 #f5ede5;
+            box-shadow: inset 0 -2px 0 var(--border2), inset 0 1px 0 #f5f0e6;
         }
-        .rr-btn:hover { background: #dfcebc; color: #1a1a1a; }
+        .rr-btn:hover { background: #ddd3c0; color: #3a3028; }
         .rr-btn:active { transform: scale(0.94); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
         .rr-btn.primary {
-            background: #c8dcc8; color: var(--accent);
-            box-shadow: inset 0 -2px 0 #a8b8a8, inset 0 1px 0 #e8f0e8;
+            background: #d0e0d0; color: var(--accent);
+            box-shadow: inset 0 -2px 0 #b8ccb8, inset 0 1px 0 #e8f0e8;
             width: 44px; height: 44px; font-size: 18px;
         }
-        .rr-btn.primary:hover { background: #b5d0b5; color: #1a4a1a; }
+        .rr-btn.primary:hover { background: #c0d8c0; color: #5a8a5a; }
         .rr-btn svg { width: 18px; height: 18px; fill: currentColor; }
         .rr-btn.primary svg { width: 20px; height: 20px; }
         .rr-vol-wrap { display: flex; align-items: center; gap: 8px; margin-left: auto; flex: 1 1 130px; max-width: 200px; }
         .rr-vol-wrap button { background: none; border: none; color: var(--muted); font-size: 15px; cursor: pointer; padding: 4px; display: flex; align-items: center; }
         .rr-vol-wrap button:hover { color: var(--text); }
         .rr-vol-slider { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; background: var(--border); outline: none; flex: 1; min-width: 50px; }
-        .rr-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent2); cursor: pointer; box-shadow: 0 0 6px rgba(76,175,80,0.2); }
+        .rr-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent2); cursor: pointer; box-shadow: 0 0 6px rgba(143,188,143,0.2); }
         .rr-vol-slider::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--accent2); cursor: pointer; border: none; }
         .rr-channels {
             display: grid;
@@ -173,15 +173,15 @@
             max-height: 50vh;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: var(--border2) #ede3d6;
+            scrollbar-color: var(--border2) #ebe5d8;
         }
         .rr-channels::-webkit-scrollbar { width: 5px; }
-        .rr-channels::-webkit-scrollbar-track { background: #ede3d6; }
+        .rr-channels::-webkit-scrollbar-track { background: #ebe5d8; }
         .rr-channels::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
         .rr-ch-btn {
             display: flex; flex-direction: column; align-items: center; gap: 6px;
             padding: 10px 6px 8px;
-            background: #f7efe5;
+            background: #f0ebe0;
             border: 1px solid var(--border);
             border-radius: 10px;
             cursor: pointer;
@@ -189,20 +189,20 @@
             position: relative;
         }
         .rr-ch-btn:hover {
-            background: #ede3d6;
+            background: #e8e0d0;
             border-color: var(--border2);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(120,90,60,0.1);
+            box-shadow: 0 4px 12px rgba(122,158,122,0.1);
         }
         .rr-ch-btn.active {
-            background: rgba(45,107,45,0.08);
+            background: rgba(122,158,122,0.08);
             border-color: var(--accent2);
-            box-shadow: 0 0 0 2px rgba(76,175,80,0.15), 0 4px 12px rgba(45,107,45,0.1);
+            box-shadow: 0 0 0 2px rgba(143,188,143,0.15), 0 4px 12px rgba(122,158,122,0.1);
         }
         .rr-ch-btn.playing {
-            background: rgba(45,107,45,0.12);
+            background: rgba(122,158,122,0.12);
             border-color: var(--accent2);
-            box-shadow: 0 0 0 2px rgba(76,175,80,0.2), 0 4px 12px rgba(45,107,45,0.12);
+            box-shadow: 0 0 0 2px rgba(143,188,143,0.2), 0 4px 12px rgba(122,158,122,0.12);
         }
         .rr-ch-btn.loading {
             border-color: #b8860b;
@@ -214,13 +214,13 @@
         }
         .rr-ch-icon {
             width: 40px; height: 40px; border-radius: 10px;
-            background: linear-gradient(135deg, #e6d7c6, #dccbba);
+            background: linear-gradient(135deg, #e8e0d0, #ddd3c0);
             display: flex; align-items: center; justify-content: center;
             font-size: 18px; color: var(--muted);
             flex-shrink: 0;
         }
         .rr-ch-btn.active .rr-ch-icon,
-        .rr-ch-btn.playing .rr-ch-icon { color: var(--accent2); background: rgba(76,175,80,0.12); }
+        .rr-ch-btn.playing .rr-ch-icon { color: var(--accent2); background: rgba(143,188,143,0.12); }
         .rr-ch-name {
             font-size: 11px; font-weight: 600; color: var(--text);
             text-align: center; line-height: 1.25;
@@ -233,14 +233,14 @@
             position: absolute; top: 6px; right: 6px;
             width: 8px; height: 8px; border-radius: 50%;
             background: var(--accent2);
-            box-shadow: 0 0 6px rgba(76,175,80,0.4);
+            box-shadow: 0 0 6px rgba(143,188,143,0.4);
             animation: pulse 1.2s infinite;
             display: none;
         }
         .rr-ch-btn.playing .rr-ch-badge { display: block; }
         .rr-ch-fav {
             position: absolute; top: 4px; left: 4px;
-            background: none; border: none; color: #b5a492;
+            background: none; border: none; color: #c5b8a5;
             cursor: pointer; padding: 2px; font-size: 10px;
             display: flex; align-items: center; justify-content: center;
             transition: .12s; opacity: 0;
@@ -248,9 +248,11 @@
         .rr-ch-btn:hover .rr-ch-fav { opacity: 1; }
         .rr-ch-fav.is-fav { opacity: 1; color: #c0392b; }
         .rr-filter-bar {
-            display: flex; align-items: center; gap: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             padding: 8px 14px;
-            background: #ede3d6;
+            background: #e8e0d0;
             border-bottom: 1px solid var(--border);
             flex-wrap: wrap;
             justify-content: space-between;
@@ -265,8 +267,8 @@
             font-size: 12px; outline: none; transition: .15s;
         }
         .rr-search input:focus { border-color: var(--border2); background: #fffcf5; }
-        .rr-search input::placeholder { color: #b5a492; }
-        .rr-search .s-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: #b5a492; font-size: 12px; pointer-events: none; }
+        .rr-search input::placeholder { color: #c5b8a5; }
+        .rr-search .s-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: #c5b8a5; font-size: 12px; pointer-events: none; }
         .rr-cats { display: flex; gap: 5px; overflow-x: auto; flex-wrap: wrap; padding-bottom: 2px; flex: 1 1 auto; }
         .rr-cats::-webkit-scrollbar { display: none; }
         .rr-cat {
@@ -292,7 +294,7 @@
 
 <div class="rr-wrap" id="app">
 
-<div class="rr-titlebar">
+  <div class="rr-titlebar">
     <div class="rr-logo">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8v8"/><path d="M15 8v8"/><path d="M12 8v8"/></svg>
       Winamp <span>v2</span>
@@ -304,7 +306,7 @@
     </div>
   </div>
 
-<div class="rr-filter-bar">
+  <div class="rr-filter-bar">
     <div class="rr-search">
       <span class="s-icon">🔍</span>
       <input type="text" id="search-input" placeholder="Поиск канала..."/>
@@ -318,17 +320,11 @@
     </div>
   </div>
 
-<div class="rr-channels" id="channels-wrap">
-    <div style="grid-column:1/-1;text-align:center;padding:32px 12px;color:#8b7b6b;font-size:12px;">Загрузка каналов...</div>
+  <div class="rr-channels" id="channels-wrap">
+    <div style="grid-column:1/-1;text-align:center;padding:32px 12px;color:#9b8b7a;font-size:12px;">Загрузка каналов...</div>
+  </div>
 
-  
-
-  
-
-  <audio id="audio-player" preload="none" crossorigin="anonymous"></audio>
-</div>
-
-<div class="rr-now">
+  <div class="rr-now">
     <div class="rr-cover" id="cover"><div class="disc" id="disc"></div></div>
     <div class="rr-meta">
       <div class="station" id="np-station">Выберите станцию</div>
@@ -340,9 +336,7 @@
     </div>
   </div>
 
-
-
-<div class="rr-ctrls">
+  <div class="rr-ctrls">
     <div class="group">
       <button class="rr-btn" id="btn-prev" title="Предыдущая">
         <svg viewBox="0 0 24 24"><polygon points="19,4 9,10 9,4 5,4 5,20 9,20 9,14 19,20"/></svg>
@@ -367,20 +361,9 @@
     </div>
   </div>
 
+</div>
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
+<audio id="audio-player" preload="none" crossorigin="anonymous"></audio>
 
 <script>
 (function(){
@@ -391,14 +374,15 @@
     { id: 3, name: "Радио 7", genre: "Хиты", cat: "pop", urls: ["https://radio7.hostingradio.ru:8040/radio7256.mp3"], country: "Россия", api: null },
     { id: 1, name: "Radio Paradise", genre: "Эклектика", cat: "pop", urls: ["https://stream.radioparadise.com/aac-128","https://stream.radioparadise.com/mp3-192"], country: "США", api: "rp", apiId: "0" },
     { id: 4, name: "Record", genre: "Dance / Electronic", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/rr_main96.aacp"], country: "Россия", api: null },
-    { id: 12, name: "Lo-Fi House", genre: "Lo-Fi House", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/lofihouse96.aacp"], country: "Россия", page: "https://www.radiorecord.ru/station/lo-fi-house", api: null },
     { id: 11, name: "Pirate Station", genre: "Drum'n'Bass", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/ps96.aacp"], country: "Россия", api: null },
     { id: 13, name: "D'n'B Classics", genre: "DnB Classics", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/drumhits96.aacp"], country: "Россия", api: null },
     { id: 10, name: "Хиты всех времён", genre: "Big Hits", cat: "pop", urls: ["https://radiorecord.hostingradio.ru/bighits96.aacp"], country: "Россия", api: null },
-    { id: 14, name: "Наше Радио — Jazz", genre: "Jazz", cat: "jazz", urls: ["https://nashe1.hostingradio.ru/jazz-128.mp3"], country: "Россия", api: null }
+    { id: 14, name: "Наше Радио — Jazz", genre: "Jazz", cat: "jazz", urls: ["https://nashe1.hostingradio.ru/jazz-128.mp3"], country: "Россия", api: null },
+    { id: 17, name: "DFM Ibiza", genre: "Ibiza / Dance", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/ibiza96.aacp"], country: "Россия", api: null },
+    { id: 19, name: "Beijing Pop Music Radio 999", genre: "Chinese Pop", cat: "pop", urls: ["http://lhttp.qingting.fm/live/20211620/64k.mp3"], country: "Китай", api: null }
   ];
 
-  const icons = { 6: '🎻', 3: '🎵', 1: '🌴', 4: '🎧', 12: '🏠', 11: '☠️', 13: '🥁', 10: '🔥', 14: '🎷' };
+  const icons = {6: '🎻', 3: '🎵', 1: '🌴', 4: '🎧', 11: '☠️', 13: '🥁', 10: '🔥', 14: '🎷', 17: '🏝️', 19: '🇨🇳'};
 
   let currentStation = null, isPlaying = false, isLoading = false;
   let currentCat = 'all', favorites = new Set(), volume = 0.7, isMuted = false;
@@ -434,15 +418,15 @@
   function renderChannels() {
     const filtered=getFiltered();
     channelsWrap.innerHTML='';
-    if(!filtered.length){ channelsWrap.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:32px 12px;color:#8b7b6b;font-size:12px;">Каналы не найдены</div>'; return; }
+    if(!filtered.length){ channelsWrap.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:32px 12px;color:#9b8b7a;font-size:12px;">Каналы не найдены</div>'; return; }
     filtered.forEach(s=>{
       const isActive=currentStation&&currentStation.id===s.id;
       const isFav=favorites.has(s.id);
       let cls='';
-      if(isActive&&isPlaying) cls=' playing';
-      else if(isActive&&isLoading) cls=' loading';
-      else if(isActive&&!isPlaying&&!isLoading) cls=' error';
-      else if(isActive) cls=' active';
+      if(isActive&&isPlaying) cls+=' playing';
+      else if(isActive&&isLoading) cls+=' loading';
+      else if(isActive&&!isPlaying&&!isLoading) cls+=' error';
+      else if(isActive) cls+=' active';
 
       const btn=document.createElement('div');
       btn.className='rr-ch-btn'+cls;
@@ -520,7 +504,8 @@
   function prevStation(){
     const f=getFiltered(); if(!f.length) return;
     let idx=currentStation?f.findIndex(s=>s.id===currentStation.id):0;
-    if(idx<0) idx=0; idx=(idx-1+f.length)%f.length; selectStation(f[idx]);
+    if(idx<0) idx=0; idx=(idx-1+f.length)%f.length;
+    selectStation(f[idx]);
   }
   function nextStation(){
     const f=getFiltered(); if(!f.length) return;
@@ -541,9 +526,6 @@
       if(currentStation.api==='rp'){
         const res=await fetch('https://api.radioparadise.com/api/now_playing?chan='+currentStation.apiId);
         const data=await res.json(); if(data&&data.song) npTrack.textContent=data.artist+' — '+data.song;
-      } else if(currentStation.api==='somafm'){
-        const res=await fetch('https://api.somafm.com/songs/'+currentStation.apiId+'.json');
-        const data=await res.json(); if(data&&data.songs&&data.songs.length){ const s=data.songs[0]; npTrack.textContent=s.artist+' — '+s.title; }
       }
     } catch(e){ npTrack.textContent=''; }
   }
@@ -593,7 +575,8 @@
 
   function init(){
     audio.volume=volume; volumeSlider.value=volume*100; renderChannels();
-    const f=getFiltered(); if(f.length){ selectStation(f[0]); }
+    const f=getFiltered(); 
+    if(f.length){ selectStation(f[0]); }
   }
   init();
 
