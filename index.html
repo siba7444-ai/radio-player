@@ -247,6 +247,16 @@
         }
         .rr-ch-btn:hover .rr-ch-fav { opacity: 1; }
         .rr-ch-fav.is-fav { opacity: 1; color: #c0392b; }
+        .rr-ch-del {
+            position: absolute; top: 4px; right: 4px;
+            background: #c0392b; border: none; color: #fff;
+            cursor: pointer; width: 16px; height: 16px;
+            border-radius: 50%; font-size: 10px; font-weight: 700;
+            display: none; align-items: center; justify-content: center;
+            z-index: 10;
+        }
+        .rr-channels.manage-mode .rr-ch-del { display: flex; }
+        .rr-channels.manage-mode .rr-ch-btn { border-color: #c0392b; }
         .rr-filter-bar {
             display: flex;
             align-items: center;
@@ -278,6 +288,43 @@
         }
         .rr-cat:hover { border-color: var(--border2); color: var(--text); }
         .rr-cat.active { background: var(--accent2); color: var(--panel); border-color: var(--accent2); }
+        .rr-manage-btns { display: flex; gap: 5px; }
+        .rr-manage-btn {
+            padding: 4px 10px; border: 1px solid var(--border); border-radius: 14px;
+            background: var(--panel); color: var(--muted); font-size: 10px;
+            font-weight: 600; cursor: pointer; white-space: nowrap; transition: .12s;
+        }
+        .rr-manage-btn:hover { border-color: var(--accent2); color: var(--accent); }
+        .rr-manage-btn.active { background: #c0392b; color: #fff; border-color: #c0392b; }
+        .rr-add-form {
+            display: none;
+            padding: 12px 14px;
+            background: #f0ebe0;
+            border-bottom: 1px solid var(--border);
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .rr-add-form.open { display: flex; }
+        .rr-add-form label {
+            display: flex; flex-direction: column; gap: 3px;
+            font-size: 10px; color: var(--muted); font-weight: 600;
+            flex: 1 1 140px; min-width: 100px;
+        }
+        .rr-add-form input, .rr-add-form select {
+            padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
+            background: var(--panel); color: var(--text); font-size: 12px; outline: none;
+        }
+        .rr-add-form input:focus, .rr-add-form select:focus { border-color: var(--accent2); }
+        .rr-add-form .form-btns { display: flex; gap: 5px; }
+        .rr-add-form button {
+            padding: 6px 14px; border: none; border-radius: 6px;
+            font-size: 11px; font-weight: 700; cursor: pointer; transition: .12s;
+        }
+        .rr-add-form .btn-save { background: var(--accent2); color: #fff; }
+        .rr-add-form .btn-save:hover { background: var(--accent); }
+        .rr-add-form .btn-cancel { background: var(--border); color: var(--text); }
+        .rr-add-form .btn-cancel:hover { background: var(--border2); }
         @media (max-width: 580px) {
             .rr-channels { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
             .rr-ch-name { font-size: 10px; }
@@ -316,7 +363,30 @@
       <button class="rr-cat" data-cat="pop">Поп</button>
       <button class="rr-cat" data-cat="electronic">Электро</button>
       <button class="rr-cat" data-cat="classical">Классика</button>
+      <button class="rr-cat" data-cat="jazz">Джаз</button>
       <button class="rr-cat" data-cat="favorites"><span style="color:#c0392b">★</span> Избранное</button>
+    </div>
+    <div class="rr-manage-btns">
+      <button class="rr-manage-btn" id="btn-add">+ Добавить</button>
+      <button class="rr-manage-btn" id="btn-manage">✎ Управление</button>
+    </div>
+  </div>
+
+  <div class="rr-add-form" id="add-form">
+    <label>Название *<input type="text" id="add-name" placeholder="Моё радио"/></label>
+    <label>URL потока *<input type="text" id="add-url" placeholder="https://..."/></label>
+    <label>Жанр<input type="text" id="add-genre" placeholder="Музыка"/></label>
+    <label>Категория
+      <select id="add-cat">
+        <option value="pop">Поп</option>
+        <option value="electronic">Электро</option>
+        <option value="classical">Классика</option>
+        <option value="jazz">Джаз</option>
+      </select>
+    </label>
+    <div class="form-btns">
+      <button class="btn-save" id="btn-save-station">Сохранить</button>
+      <button class="btn-cancel" id="btn-cancel-add">Отмена</button>
     </div>
   </div>
 
@@ -369,24 +439,26 @@
 (function(){
   'use strict';
 
-  const stations = [
-    { id: 6, name: "Симфония FM", genre: "Классика / Симфония", cat: "classical", urls: ["https://radiorecord.hostingradio.ru/symph96.aacp"], country: "Россия", api: null },
-    { id: 3, name: "Радио 7", genre: "Хиты", cat: "pop", urls: ["https://radio7.hostingradio.ru:8040/radio7256.mp3"], country: "Россия", api: null },
-    { id: 1, name: "Radio Paradise", genre: "Эклектика", cat: "pop", urls: ["https://stream.radioparadise.com/aac-128","https://stream.radioparadise.com/mp3-192"], country: "США", api: "rp", apiId: "0" },
-    { id: 4, name: "Record", genre: "Dance / Electronic", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/rr_main96.aacp"], country: "Россия", api: null },
-    { id: 11, name: "Pirate Station", genre: "Drum'n'Bass", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/ps96.aacp"], country: "Россия", api: null },
-    { id: 13, name: "D'n'B Classics", genre: "DnB Classics", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/drumhits96.aacp"], country: "Россия", api: null },
-    { id: 10, name: "Хиты всех времён", genre: "Big Hits", cat: "pop", urls: ["https://radiorecord.hostingradio.ru/bighits96.aacp"], country: "Россия", api: null },
-    { id: 14, name: "Наше Радио — Jazz", genre: "Jazz", cat: "jazz", urls: ["https://nashe1.hostingradio.ru/jazz-128.mp3"], country: "Россия", api: null },
-    { id: 17, name: "DFM Ibiza", genre: "Ibiza / Dance", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/ibiza96.aacp"], country: "Россия", api: null },
-    { id: 19, name: "Beijing Pop Music Radio 999", genre: "Chinese Pop", cat: "pop", urls: ["http://lhttp.qingting.fm/live/20211620/64k.mp3"], country: "Китай", api: null }
+  const defaultStations = [
+    { id: 6, name: "Симфония FM", genre: "Классика / Симфония", cat: "classical", urls: ["https://radiorecord.hostingradio.ru/symph96.aacp"], country: "Россия", api: null, builtin: true },
+    { id: 3, name: "Радио 7", genre: "Хиты", cat: "pop", urls: ["https://radio7.hostingradio.ru:8040/radio7256.mp3"], country: "Россия", api: null, builtin: true },
+    { id: 1, name: "Radio Paradise", genre: "Эклектика", cat: "pop", urls: ["https://stream.radioparadise.com/aac-128","https://stream.radioparadise.com/mp3-192"], country: "США", api: "rp", apiId: "0", builtin: true },
+    { id: 4, name: "Record", genre: "Dance / Electronic", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/rr_main96.aacp"], country: "Россия", api: null, builtin: true },
+    { id: 11, name: "Pirate Station", genre: "Drum'n'Bass", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/ps96.aacp"], country: "Россия", api: null, builtin: true },
+    { id: 13, name: "D'n'B Classics", genre: "DnB Classics", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/drumhits96.aacp"], country: "Россия", api: null, builtin: true },
+    { id: 10, name: "Хиты всех времён", genre: "Big Hits", cat: "pop", urls: ["https://radiorecord.hostingradio.ru/bighits96.aacp"], country: "Россия", api: null, builtin: true },
+    { id: 14, name: "Наше Радио — Jazz", genre: "Jazz", cat: "jazz", urls: ["https://nashe1.hostingradio.ru/jazz-128.mp3"], country: "Россия", api: null, builtin: true },
+    { id: 17, name: "DFM Ibiza", genre: "Ibiza / Dance", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/ibiza96.aacp"], country: "Россия", api: null, builtin: true },
+    { id: 19, name: "Beijing Pop Music Radio 999", genre: "Chinese Pop", cat: "pop", urls: ["http://lhttp.qingting.fm/live/20211620/64k.mp3"], country: "Китай", api: null, builtin: true }
   ];
 
   const icons = {6: '🎻', 3: '🎵', 1: '🌴', 4: '🎧', 11: '☠️', 13: '🥁', 10: '🔥', 14: '🎷', 17: '🏝️', 19: '🇨🇳'};
 
+  let stations = [];
   let currentStation = null, isPlaying = false, isLoading = false;
   let currentCat = 'all', favorites = new Set(), volume = 0.7, isMuted = false;
   let currentUrlIndex = 0, loadTimeout = null, nowPlayingInterval = null;
+  let manageMode = false, nextCustomId = 1000;
 
   const audio = document.getElementById('audio-player');
   const channelsWrap = document.getElementById('channels-wrap');
@@ -402,14 +474,34 @@
   const iconVoloff = document.getElementById('icon-voloff');
   const volumeSlider = document.getElementById('volume-slider');
   const winTitle = document.getElementById('win-title');
+  const addForm = document.getElementById('add-form');
+  const btnManage = document.getElementById('btn-manage');
 
+  // Load data
   try { const saved = localStorage.getItem('radio_favorites_v2'); if (saved) favorites = new Set(JSON.parse(saved)); } catch(e){}
+  try { 
+    const saved = localStorage.getItem('radio_custom_stations_v2'); 
+    if (saved) {
+      const custom = JSON.parse(saved);
+      stations = [...defaultStations, ...custom];
+      nextCustomId = Math.max(1000, ...custom.map(s => s.id + 1));
+    } else {
+      stations = [...defaultStations];
+    }
+  } catch(e){ stations = [...defaultStations]; }
+
   function saveFav() { try { localStorage.setItem('radio_favorites_v2', JSON.stringify(Array.from(favorites))); } catch(e){} }
+  function saveCustom() { 
+    try { 
+      const custom = stations.filter(s => !s.builtin);
+      localStorage.setItem('radio_custom_stations_v2', JSON.stringify(custom)); 
+    } catch(e){} 
+  }
 
   function getFiltered() {
     const q=searchInput.value.toLowerCase().trim();
     return stations.filter(s=>{
-      const ms=!q||s.name.toLowerCase().includes(q)||s.genre.toLowerCase().includes(q)||s.country.toLowerCase().includes(q);
+      const ms=!q||s.name.toLowerCase().includes(q)||s.genre.toLowerCase().includes(q)||(s.country||'').toLowerCase().includes(q);
       const mc=currentCat==='all'||(currentCat==='favorites'?favorites.has(s.id):s.cat===currentCat);
       return ms&&mc;
     });
@@ -435,13 +527,16 @@
         '<button class="rr-ch-fav '+(isFav?'is-fav':'')+'" data-id="'+s.id+'" title="Избранное">'+
           '<svg width="10" height="10" viewBox="0 0 24 24" fill="'+(isFav?'currentColor':'none')+'" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="12,3 15.3,9.5 22,10.3 17,15.1 18.5,21.7 12,18.3 5.5,21.7 7,15.1 2,10.3 8.7,9.5 "/></svg>'+
         '</button>'+
+        (s.builtin ? '' : '<button class="rr-ch-del" data-id="'+s.id+'" title="Удалить">×</button>')+
         '<div class="rr-ch-badge"></div>'+
-        '<div class="rr-ch-icon">'+(icons[s.id]||'♫')+'</div>'+
+        '<div class="rr-ch-icon">'+(icons[s.id]||'📻')+'</div>'+
         '<div class="rr-ch-name">'+s.name+'</div>'+
         '<div class="rr-ch-genre">'+s.genre+'</div>';
 
       btn.addEventListener('click',function(e){
         if(e.target.closest('.rr-ch-fav')){ e.stopPropagation(); toggleFav(s.id); return; }
+        if(e.target.closest('.rr-ch-del')){ e.stopPropagation(); deleteStation(s.id); return; }
+        if(manageMode) return;
         selectStation(s);
       });
       channelsWrap.appendChild(btn);
@@ -450,6 +545,51 @@
   }
 
   function toggleFav(id){ favorites.has(id)?favorites.delete(id):favorites.add(id); saveFav(); renderChannels(); }
+
+  function deleteStation(id){
+    if(!confirm('Удалить эту станцию?')) return;
+    const idx = stations.findIndex(s => s.id === id);
+    if(idx >= 0 && !stations[idx].builtin){
+      if(currentStation && currentStation.id === id){ stopAudio(); currentStation = null; }
+      stations.splice(idx, 1);
+      favorites.delete(id);
+      saveCustom(); saveFav(); renderChannels();
+    }
+  }
+
+  function addStation(){
+    const name = document.getElementById('add-name').value.trim();
+    const url = document.getElementById('add-url').value.trim();
+    const genre = document.getElementById('add-genre').value.trim() || 'Музыка';
+    const cat = document.getElementById('add-cat').value;
+    
+    if(!name || !url){ alert('Заполните название и URL'); return; }
+    if(!url.startsWith('http')){ alert('URL должен начинаться с http:// или https://'); return; }
+
+    const newStation = {
+      id: nextCustomId++,
+      name: name,
+      genre: genre,
+      cat: cat,
+      urls: [url],
+      country: 'Моё',
+      api: null,
+      builtin: false
+    };
+    
+    stations.push(newStation);
+    saveCustom();
+    renderChannels();
+    
+    // Reset form
+    document.getElementById('add-name').value = '';
+    document.getElementById('add-url').value = '';
+    document.getElementById('add-genre').value = '';
+    addForm.classList.remove('open');
+    
+    // Select new station
+    selectStation(newStation);
+  }
 
   function selectStation(s){
     if(loadTimeout) clearTimeout(loadTimeout);
@@ -566,8 +706,25 @@
     currentCat=btn.dataset.cat; renderChannels();
   });
 
+  document.getElementById('btn-add').addEventListener('click',function(){
+    addForm.classList.toggle('open');
+    if(addForm.classList.contains('open')) document.getElementById('add-name').focus();
+  });
+  document.getElementById('btn-cancel-add').addEventListener('click',function(){
+    addForm.classList.remove('open');
+  });
+  document.getElementById('btn-save-station').addEventListener('click',addStation);
+  
+  btnManage.addEventListener('click',function(){
+    manageMode = !manageMode;
+    btnManage.classList.toggle('active', manageMode);
+    channelsWrap.classList.toggle('manage-mode', manageMode);
+    btnManage.textContent = manageMode ? '✓ Готово' : '✎ Управление';
+    renderChannels();
+  });
+
   document.addEventListener('keydown',function(e){
-    if(e.target.tagName==='INPUT') return;
+    if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT') return;
     if(e.code==='Space'){ e.preventDefault(); togglePlay(); }
     if(e.code==='ArrowRight'){ e.preventDefault(); nextStation(); }
     if(e.code==='ArrowLeft'){ e.preventDefault(); prevStation(); }
@@ -575,8 +732,6 @@
 
   function init(){
     audio.volume=volume; volumeSlider.value=volume*100; renderChannels();
-    const f=getFiltered(); 
-    if(f.length){ selectStation(f[0]); }
   }
   init();
 
