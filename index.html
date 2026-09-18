@@ -379,10 +379,11 @@
     { id: 10, name: "Хиты всех времён", genre: "Big Hits", cat: "pop", urls: ["https://radiorecord.hostingradio.ru/bighits96.aacp"], country: "Россия", api: null },
     { id: 14, name: "Наше Радио — Jazz", genre: "Jazz", cat: "jazz", urls: ["https://nashe1.hostingradio.ru/jazz-128.mp3"], country: "Россия", api: null },
     { id: 17, name: "DFM Ibiza", genre: "Ibiza / Dance", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/ibiza96.aacp"], country: "Россия", api: null },
-    { id: 19, name: "Beijing Pop Music Radio 999", genre: "Chinese Pop", cat: "pop", urls: ["http://lhttp.qingting.fm/live/20211620/64k.mp3"], country: "Китай", api: null }
+    { id: 19, name: "Beijing Pop Music Radio 999", genre: "Chinese Pop", cat: "pop", urls: ["http://lhttp.qingting.fm/live/20211620/64k.mp3"], country: "Китай", api: null },
+    { id: 20, name: "Choco FM", genre: "Dance / Pop", cat: "pop", urls: ["https://choco.hostingradio.ru:10010/fm"], country: "Россия", api: null }
   ];
 
-  const icons = {6: '🎻', 3: '🎵', 1: '🌴', 4: '🎧', 11: '☠️', 13: '🥁', 10: '🔥', 14: '🎷', 17: '🏝️', 19: '🇨🇳'};
+  const icons = {6: '🎻', 3: '🎵', 1: '🌴', 4: '🎧', 11: '☠️', 13: '🥁', 10: '🔥', 14: '🎷', 17: '🏝️', 19: '🇨🇳', 20: '🍫'};
 
   let currentStation = null, isPlaying = false, isLoading = false;
   let currentCat = 'all', favorites = new Set(), volume = 0.7, isMuted = false;
