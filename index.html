@@ -381,10 +381,15 @@
     { id: 17, name: "DFM Ibiza", genre: "Ibiza / Dance", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/ibiza96.aacp"], country: "Россия", api: null },
     { id: 19, name: "Beijing Pop Music Radio 999", genre: "Chinese Pop", cat: "pop", urls: ["http://lhttp.qingting.fm/live/20211620/64k.mp3"], country: "Китай", api: null },
     { id: 20, name: "Choco FM", genre: "Dance / Pop", cat: "pop", urls: ["https://choco.hostingradio.ru:10010/fm"], country: "Россия", api: null },
-    { id: 21, name: "DFM K-Pop", genre: "K-Pop", cat: "pop", urls: ["http://dfm-kpop.hostingradio.ru/kpop96.aacp"], country: "Россия", api: null }
+    { id: 21, name: "DFM K-Pop", genre: "K-Pop", cat: "pop", urls: ["http://dfm-kpop.hostingradio.ru/kpop96.aacp"], country: "Россия", api: null },
+    { id: 22, name: "Instrumental", genre: "Инструментальная музыка", cat: "classical", urls: ["http://79.120.77.11:8000/instrumental"], country: "Россия", api: null },
+    { id: 23, name: "Acoustic Guitar", genre: "Акустическая гитара", cat: "pop", urls: ["http://79.120.39.202:8000/acousticguitar"], country: "Россия", api: null },
+    { id: 24, name: "Italo Pop", genre: "Italo Pop", cat: "pop", urls: ["http://213.141.131.10:8002/italopop"], country: "Италия", api: null },
+    { id: 25, name: "Tango", genre: "Танго", cat: "pop", urls: ["http://79.120.39.202:8000/tango"], country: "Аргентина", api: null },
+    { id: 26, name: "Ballroom Dance", genre: "Бальные танцы", cat: "pop", urls: ["http://79.111.14.76:8000/ballroomdance"], country: "Россия", api: null }
   ];
 
-  const icons = {6: '🎻', 3: '🎵', 1: '🌴', 4: '🎧', 11: '☠️', 13: '🥁', 10: '🔥', 14: '🎷', 17: '🏝️', 19: '🇨🇳', 20: '🍫', 21: '🇰🇷'};
+  const icons = {6: '🎻', 3: '🎵', 1: '🌴', 4: '🎧', 11: '☠️', 13: '🥁', 10: '🔥', 14: '🎷', 17: '🏝️', 19: '🇨🇳', 20: '🍫', 21: '🇰🇷', 22: '🎼', 23: '🎸', 24: '🇮🇹', 25: '💃', 26: '🕺'};
 
   let currentStation = null, isPlaying = false, isLoading = false;
   let currentCat = 'all', favorites = new Set(), volume = 0.7, isMuted = false;
