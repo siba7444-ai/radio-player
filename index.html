@@ -7,7 +7,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: #f5f0e6;
+            background: #E8E6E1;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -17,18 +17,18 @@
             user-select: none;
         }
         :root {
-            --bg: #f5f0e6;
-            --panel: #faf6ef;
-            --accent: #7a9e7a;
-            --accent2: #8fbc8f;
-            --text: #4a4033;
-            --text2: #6b5d4f;
-            --muted: #9b8b7a;
-            --border: #e0d5c5;
-            --border2: #d5c8b5;
-            --grad-title: linear-gradient(180deg, #e8e0d0 0%, #ddd3c0 100%);
-            --shadow: 0 12px 48px rgba(122,158,122,0.2), inset 0 0 0 1px #e8e0d0;
-            --shadow-inset: inset 0 0 20px rgba(143,188,143,0.06);
+            --bg: #E8E6E1;
+            --panel: #ffffff;
+            --accent: #222222;
+            --accent2: #22c55e;
+            --text: #222222;
+            --text2: #666666;
+            --muted: #999999;
+            --border: #dddddd;
+            --border2: #e0e0e0;
+            --grad-title: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+            --shadow: 0 8px 32px rgba(0,0,0,0.08);
+            --shadow-inset: inset 0 0 20px rgba(0,0,0,0.02);
         }
         .rr-wrap {
             width: 100%; max-width: 900px;
@@ -78,7 +78,7 @@
         .rr-title-text {
             flex: 1;
             font-size: 13px;
-            color: #5a4f42;
+            color: var(--text2);
             letter-spacing: 0.3px;
             white-space: nowrap;
             overflow: hidden;
@@ -86,36 +86,36 @@
         }
         .rr-win-ctrl { display: flex; gap: 6px; margin-left: auto; }
         .rr-win-ctrl button {
-            background: none; border: none; color: #7a6f5f;
+            background: none; border: none; color: var(--muted);
             font-size: 14px; line-height: 1; padding: 3px 8px;
             border-radius: 5px; cursor: pointer; transition: .15s; font-weight: 600;
         }
-        .rr-win-ctrl button:hover { background: rgba(0,0,0,0.06); color: #3a3028; }
-        .rr-win-ctrl .close:hover { background: #c0392b; color: #fff; }
+        .rr-win-ctrl button:hover { background: rgba(0,0,0,0.06); color: var(--text); }
+        .rr-win-ctrl .close:hover { background: #ff4444; color: #fff; }
         .rr-now {
             display: flex; align-items: center; gap: 14px;
             padding: 10px 16px;
-            background: #f0ebe0;
+            background: #f5f5f5;
             border-bottom: 1px solid var(--border);
             flex-wrap: wrap;
         }
         .rr-cover {
             width: 64px; height: 64px; border-radius: 8px;
-            background: linear-gradient(135deg, #e8e0d0, #ddd3c0);
+            background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
             display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; box-shadow: 0 2px 8px rgba(122,158,122,0.15);
+            flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             position: relative; overflow: hidden;
         }
         .rr-cover .disc {
             width: 36px; height: 36px; border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, #8fbc8f, #7a9e7a);
-            box-shadow: 0 0 12px rgba(122,158,122,0.3);
+            background: radial-gradient(circle at 35% 35%, #22c55e, #16a34a);
+            box-shadow: 0 0 12px rgba(34,197,94,0.3);
             animation: spinDisc 4s linear infinite paused;
         }
         .rr-cover .disc.spin { animation-play-state: running; }
         .rr-cover .disc::after {
             content: ''; position: absolute; inset: 12px;
-            border-radius: 50%; background: #f5f0e6;
+            border-radius: 50%; background: #ffffff;
         }
         @keyframes spinDisc { to { transform: rotate(360deg); } }
         .rr-meta { flex: 1; min-width: 0; }
@@ -125,45 +125,45 @@
         .rr-live {
             display: none; align-items: center; gap: 5px;
             font-size: 9px; font-weight: 800; text-transform: uppercase;
-            color: var(--accent); background: rgba(122,158,122,0.10);
+            color: #ff4444; background: rgba(255,68,68,0.08);
             padding: 2px 10px 2px 8px; border-radius: 12px;
-            border: 1px solid rgba(122,158,122,0.20);
+            border: 1px solid rgba(255,68,68,0.20);
         }
-        .rr-live .dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; animation: pulse 1.2s infinite; }
+        .rr-live .dot { width: 5px; height: 5px; background: #ff4444; border-radius: 50%; animation: pulse 1.2s infinite; }
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.2;transform:scale(.7)} }
         .rr-status-txt { font-size: 11px; color: var(--muted); }
         .rr-ctrls {
             display: flex; align-items: center; gap: 6px;
             padding: 8px 14px;
-            background: #ebe5d8;
+            background: #f5f5f5;
             border-bottom: 1px solid var(--border);
             flex-wrap: wrap;
             justify-content: center;
         }
         .rr-ctrls .group { display: flex; align-items: center; gap: 3px; }
         .rr-btn {
-            background: #e8e0d0; border: none; border-radius: 6px;
-            color: #5a4f42; width: 38px; height: 38px;
+            background: #f5f5f5; border: none; border-radius: 6px;
+            color: var(--text2); width: 38px; height: 38px;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: .12s; font-size: 15px;
-            box-shadow: inset 0 -2px 0 var(--border2), inset 0 1px 0 #f5f0e6;
+            box-shadow: inset 0 -2px 0 var(--border2), inset 0 1px 0 #ffffff;
         }
-        .rr-btn:hover { background: #ddd3c0; color: #3a3028; }
+        .rr-btn:hover { background: #e8e8e8; color: var(--text); }
         .rr-btn:active { transform: scale(0.94); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
         .rr-btn.primary {
-            background: #d0e0d0; color: var(--accent);
-            box-shadow: inset 0 -2px 0 #b8ccb8, inset 0 1px 0 #e8f0e8;
+            background: var(--accent); color: #ffffff;
+            box-shadow: none;
             width: 44px; height: 44px; font-size: 18px;
         }
-        .rr-btn.primary:hover { background: #c0d8c0; color: #5a8a5a; }
+        .rr-btn.primary:hover { background: #000000; color: #ffffff; }
         .rr-btn svg { width: 18px; height: 18px; fill: currentColor; }
         .rr-btn.primary svg { width: 20px; height: 20px; }
         .rr-vol-wrap { display: flex; align-items: center; gap: 8px; margin-left: auto; flex: 1 1 130px; max-width: 200px; }
         .rr-vol-wrap button { background: none; border: none; color: var(--muted); font-size: 15px; cursor: pointer; padding: 4px; display: flex; align-items: center; }
         .rr-vol-wrap button:hover { color: var(--text); }
         .rr-vol-slider { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; background: var(--border); outline: none; flex: 1; min-width: 50px; }
-        .rr-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent2); cursor: pointer; box-shadow: 0 0 6px rgba(143,188,143,0.2); }
-        .rr-vol-slider::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--accent2); cursor: pointer; border: none; }
+        .rr-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: 0 0 6px rgba(0,0,0,0.15); }
+        .rr-vol-slider::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; }
         .rr-channels {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -173,15 +173,15 @@
             max-height: 50vh;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: var(--border2) #ebe5d8;
+            scrollbar-color: var(--border) #f5f5f5;
         }
         .rr-channels::-webkit-scrollbar { width: 5px; }
-        .rr-channels::-webkit-scrollbar-track { background: #ebe5d8; }
-        .rr-channels::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+        .rr-channels::-webkit-scrollbar-track { background: #f5f5f5; }
+        .rr-channels::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
         .rr-ch-btn {
             display: flex; flex-direction: column; align-items: center; gap: 6px;
             padding: 10px 6px 8px;
-            background: #f0ebe0;
+            background: #fafafa;
             border: 1px solid var(--border);
             border-radius: 10px;
             cursor: pointer;
@@ -189,38 +189,38 @@
             position: relative;
         }
         .rr-ch-btn:hover {
-            background: #e8e0d0;
-            border-color: var(--border2);
+            background: #f0f0f0;
+            border-color: var(--border);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(122,158,122,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
         }
         .rr-ch-btn.active {
-            background: rgba(122,158,122,0.08);
-            border-color: var(--accent2);
-            box-shadow: 0 0 0 2px rgba(143,188,143,0.15), 0 4px 12px rgba(122,158,122,0.1);
+            background: #f0f0f0;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(34,34,34,0.06), 0 4px 12px rgba(0,0,0,0.06);
         }
         .rr-ch-btn.playing {
-            background: rgba(122,158,122,0.12);
-            border-color: var(--accent2);
-            box-shadow: 0 0 0 2px rgba(143,188,143,0.2), 0 4px 12px rgba(122,158,122,0.12);
+            background: rgba(34,197,94,0.06);
+            border-color: rgba(34,197,94,0.40);
+            box-shadow: 0 0 0 2px rgba(34,197,94,0.12), 0 4px 12px rgba(34,197,94,0.08);
         }
         .rr-ch-btn.loading {
-            border-color: #b8860b;
-            background: rgba(184,134,11,0.06);
+            border-color: rgba(234,179,8,0.40);
+            background: rgba(234,179,8,0.04);
         }
         .rr-ch-btn.error {
-            border-color: #c0392b;
-            background: rgba(192,57,43,0.06);
+            border-color: rgba(239,68,68,0.30);
+            background: rgba(239,68,68,0.04);
         }
         .rr-ch-icon {
             width: 40px; height: 40px; border-radius: 10px;
-            background: linear-gradient(135deg, #e8e0d0, #ddd3c0);
+            background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
             display: flex; align-items: center; justify-content: center;
             font-size: 18px; color: var(--muted);
             flex-shrink: 0;
         }
         .rr-ch-btn.active .rr-ch-icon,
-        .rr-ch-btn.playing .rr-ch-icon { color: var(--accent2); background: rgba(143,188,143,0.12); }
+        .rr-ch-btn.playing .rr-ch-icon { color: var(--text); background: #e0e0e0; }
         .rr-ch-name {
             font-size: 11px; font-weight: 600; color: var(--text);
             text-align: center; line-height: 1.25;
@@ -233,26 +233,26 @@
             position: absolute; top: 6px; right: 6px;
             width: 8px; height: 8px; border-radius: 50%;
             background: var(--accent2);
-            box-shadow: 0 0 6px rgba(143,188,143,0.4);
+            box-shadow: 0 0 6px rgba(34,197,94,0.4);
             animation: pulse 1.2s infinite;
             display: none;
         }
         .rr-ch-btn.playing .rr-ch-badge { display: block; }
         .rr-ch-fav {
             position: absolute; top: 4px; left: 4px;
-            background: none; border: none; color: #c5b8a5;
+            background: none; border: none; color: #bbbbbb;
             cursor: pointer; padding: 2px; font-size: 10px;
             display: flex; align-items: center; justify-content: center;
             transition: .12s; opacity: 0;
         }
         .rr-ch-btn:hover .rr-ch-fav { opacity: 1; }
-        .rr-ch-fav.is-fav { opacity: 1; color: #c0392b; }
+        .rr-ch-fav.is-fav { opacity: 1; color: #ff4444; }
         .rr-filter-bar {
             display: flex;
             align-items: center;
             gap: 10px;
             padding: 8px 14px;
-            background: #e8e0d0;
+            background: #f5f5f5;
             border-bottom: 1px solid var(--border);
             flex-wrap: wrap;
             justify-content: space-between;
@@ -263,12 +263,12 @@
         .rr-search input {
             width: 100%; padding: 6px 10px 6px 30px;
             border: 1px solid var(--border); border-radius: 8px;
-            background: var(--panel); color: var(--text);
+            background: #f5f5f5; color: var(--text);
             font-size: 12px; outline: none; transition: .15s;
         }
-        .rr-search input:focus { border-color: var(--border2); background: #fffcf5; }
-        .rr-search input::placeholder { color: #c5b8a5; }
-        .rr-search .s-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: #c5b8a5; font-size: 12px; pointer-events: none; }
+        .rr-search input:focus { border-color: #999999; background: #ffffff; }
+        .rr-search input::placeholder { color: #aaaaaa; }
+        .rr-search .s-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: #999999; font-size: 12px; pointer-events: none; }
         .rr-cats { display: flex; gap: 5px; overflow-x: auto; flex-wrap: wrap; padding-bottom: 2px; flex: 1 1 auto; }
         .rr-cats::-webkit-scrollbar { display: none; }
         .rr-cat {
@@ -276,8 +276,8 @@
             background: transparent; color: var(--muted); font-size: 10px;
             font-weight: 600; cursor: pointer; white-space: nowrap; transition: .12s;
         }
-        .rr-cat:hover { border-color: var(--border2); color: var(--text); }
-        .rr-cat.active { background: var(--accent2); color: var(--panel); border-color: var(--accent2); }
+        .rr-cat:hover { border-color: var(--accent); color: var(--text); }
+        .rr-cat.active { background: var(--accent); color: #ffffff; border-color: var(--accent); }
         @media (max-width: 580px) {
             .rr-channels { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
             .rr-ch-name { font-size: 10px; }
@@ -316,12 +316,12 @@
       <button class="rr-cat" data-cat="pop">Поп</button>
       <button class="rr-cat" data-cat="electronic">Электро</button>
       <button class="rr-cat" data-cat="classical">Классика</button>
-      <button class="rr-cat" data-cat="favorites"><span style="color:#c0392b">★</span> Избранное</button>
+      <button class="rr-cat" data-cat="favorites"><span style="color:#ff4444">★</span> Избранное</button>
     </div>
   </div>
 
   <div class="rr-channels" id="channels-wrap">
-    <div style="grid-column:1/-1;text-align:center;padding:32px 12px;color:#9b8b7a;font-size:12px;">Загрузка каналов...</div>
+    <div style="grid-column:1/-1;text-align:center;padding:32px 12px;color:#999999;font-size:12px;">Загрузка каналов...</div>
   </div>
 
   <div class="rr-now">
@@ -425,7 +425,7 @@
   function renderChannels() {
     const filtered=getFiltered();
     channelsWrap.innerHTML='';
-    if(!filtered.length){ channelsWrap.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:32px 12px;color:#9b8b7a;font-size:12px;">Каналы не найдены</div>'; return; }
+    if(!filtered.length){ channelsWrap.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:32px 12px;color:#999999;font-size:12px;">Каналы не найдены</div>'; return; }
     filtered.forEach(s=>{
       const isActive=currentStation&&currentStation.id===s.id;
       const isFav=favorites.has(s.id);
