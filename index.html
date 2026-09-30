@@ -378,10 +378,11 @@
     { id: 10, name: "Хиты всех времён", genre: "Big Hits", cat: "pop", urls: ["https://radiorecord.hostingradio.ru/bighits96.aacp"], country: "Россия", api: null },
     { id: 14, name: "Наше Радио — Jazz", genre: "Jazz", cat: "jazz", urls: ["https://nashe1.hostingradio.ru/jazz-128.mp3"], country: "Россия", api: null },
     { id: 20, name: "Choco FM", genre: "Dance / Pop", cat: "pop", urls: ["https://choco.hostingradio.ru:10010/fm"], country: "Россия", api: null },
-    { id: 21, name: "DFM K-Pop", genre: "K-Pop", cat: "pop", urls: ["http://dfm-kpop.hostingradio.ru/kpop96.aacp"], country: "Россия", api: null }
+    { id: 21, name: "DFM K-Pop", genre: "K-Pop", cat: "pop", urls: ["http://dfm-kpop.hostingradio.ru/kpop96.aacp"], country: "Россия", api: null },
+    { id: 27, name: "Record Tiësto", genre: "Trance / EDM", cat: "electronic", urls: ["https://radiorecord.hostingradio.ru/tiesto96.aacp"], country: "Россия", api: null }
   ];
 
-  const icons = {6: '🎻', 3: '🎵', 1: '🌴', 4: '🎧', 13: '🥁', 10: '🔥', 14: '🎷', 20: '🍫', 21: '🇰🇷'};
+  const icons = {6: '🎻', 3: '🎵', 1: '🌴', 4: '🎧', 13: '🥁', 10: '🔥', 14: '🎷', 20: '🍫', 21: '🇰🇷', 27: '💿'};
 
   let currentStation = null, isPlaying = false, isLoading = false;
   let currentCat = 'all', favorites = new Set(), volume = 0.7, isMuted = false;
