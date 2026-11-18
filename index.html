@@ -2,20 +2,50 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Обновленный viewport для поддержки Safe Area (вырезов экрана) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    
+    <!-- PWA / iOS Web App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Радио">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Иконка приложения (Base64 SVG, повторяет дизайн плеера) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMCIgZmlsbD0iIzBhMGEwYSIvPjxyZWN0IHg9IjEyMCIgeT0iMTYwIiB3aWR0aD0iMjcyIiBoZWlnaHQ9IjE5MiIgcng9IjI0IiBmaWxsPSIjY2MwMDAwIi8+PGNpcmNsZSBjeD0iMTkwIiBjeT0iMjU2IiByPSI0OCIgZmlsbD0iIzFjMWMxYyIvPjxjaXJjbGUgY3g9IjE5MCIgY3k9IjI1NiIgcj0iMzIiIGZpbGw9IiMzMzMiLz48cmVjdCB4PSIyNzAiIHk9IjE5MCIgd2lkdGg9Ijk2IiBoZWlnaHQ9IjE2IiByeD0iOCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjI3MCIgeT0iMTkwIiB3aWR0aD0iMjQiIGhlaWdodD0iMTYiIHJ4PSI4IiBmaWxsPSIjZDMyZjJmIi8+PGNpcmNsZSBjeD0iMjgwIiBjeT0iMjgwIiByPSI4IiBmaWxsPSIjOTAwIi8+PGNpcmNsZSBjeD0iMzEwIiBjeT0iMjgwIiByPSI4IiBmaWxsPSIjOTAwIi8+PGNpcmNsZSBjeD0iMzQwIiBjeT0iMjgwIiByPSI4IiBmaWxsPSIjOTAwIi8+PGNpcmNsZSBjeD0iMjgwIiBjeT0iMzEwIiByPSI4IiBmaWxsPSIjOTAwIi8+PGNpcmNsZSBjeD0iMzEwIiBjeT0iMzEwIiByPSI4IiBmaWxsPSIjOTAwIi8+PGNpcmNsZSBjeD0iMzQwIiBjeT0iMzEwIiByPSI4IiBmaWxsPSIjOTAwIi8+PGNpcmNsZSBjeD0iMTUwIiBjeT0iMTQwIiByPSIxMiIgZmlsbD0iI2NjYyIvPjxyZWN0IHg9IjE0NSIgeT0iMTQwIiB3aWR0aD0iMTAiIGhlaWdodD0iNDAiIGZpbGw9IiNjY2MiIHJ4PSI1Ii8+PGNpcmNsZSBjeD0iMzAwIiBjeT0iOTAiIHI9IjE2IiBmaWxsPSIjZjAwIi8+PHRleHQgeD0iMzMwIiB5PSIxMDUiIGZpbGw9IiNmZmYiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0MiIgZm9udC13ZWlnaHQ9ImJvbGQiPkxJVkU8L3RleHQ+PC9zdmc+">
+
+    <!-- Манифест для корректной работы как PWA -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Winamp Radio","short_name":"Радио","start_url":".","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMCIgZmlsbD0iIzBhMGEwYSIvPjxyZWN0IHg9IjEyMCIgeT0iMTYwIiB3aWR0aD0iMjcyIiBoZWlnaHQ9IjE5MiIgcng9IjI0IiBmaWxsPSIjY2MwMDAwIi8+PGNpcmNsZSBjeD0iMTkwIiBjeT0iMjU2IiByPSI0OCIgZmlsbD0iIzFjMWMxYyIvPjxjaXJjbGUgY3g9IjE5MCIgY3k9IjI1NiIgcj0iMzIiIGZpbGw9IiMzMzMiLz48cmVjdCB4PSIyNzAiIHk9IjE5MCIgd2lkdGg9Ijk2IiBoZWlnaHQ9IjE2IiByeD0iOCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjI3MCIgeT0iMTkwIiB3aWR0aD0iMjQiIGhlaWdodD0iMTYiIHJ4PSI4IiBmaWxsPSIjZDMyZjJmIi8+PGNpcmNsZSBjeD0iMjgwIiBjeT0iMjgwIiByPSI4IiBmaWxsPSIjOTAwIi8+PGNpcmNsZSBjeD0iMzEwIiBjeT0iMjgwIiByPSI4IiBmaWxsPSIjOTAwIi8+PGNpcmNsZSBjeD0iMzQwIiBjeT0iMjgwIiByPSI4IiBmaWxsPSIjOTAwIi8+PGNpcmNsZSBjeD0iMjgwIiBjeT0iMzEwIiByPSI4IiBmaWxsPSIjOTAwIi8+PGNpcmNsZSBjeD0iMzEwIiBjeT0iMzEwIiByPSI4IiBmaWxsPSIjOTAwIi8+PGNpcmNsZSBjeD0iMzQwIiBjeT0iMzEwIiByPSI4IiBmaWxsPSIjOTAwIi8+PGNpcmNsZSBjeD0iMTUwIiBjeT0iMTQwIiByPSIxMiIgZmlsbD0iI2NjYyIvPjxyZWN0IHg9IjE0NSIgeT0iMTQwIiB3aWR0aD0iMTAiIGhlaWdodD0iNDAiIGZpbGw9IiNjY2MiIHJ4PSI1Ii8+PGNpcmNsZSBjeD0iMzAwIiBjeT0iOTAiIHI9IjE2IiBmaWxsPSIjZjAwIi8+PHRleHQgeD0iMzMwIiB5PSIxMDUiIGZpbGw9IiNmZmYiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0MiIgZm9udC13ZWlnaHQ9ImJvbGQiPkxJVkU8L3RleHQ+PC9zdmc+","sizes":"512x512","type":"image/svg+xml"}]}'>
+
     <title>Winamp — Радио</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             background: #E8E6E1;
             min-height: 100vh;
+            min-height: 100dvh; /* Для iOS 15+ (учитывает адресную строку) */
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Segoe UI', 'Arial', sans-serif;
+            
+            /* Безопасные зоны для iPhone с вырезом */
             padding: 20px;
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            
             user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            overscroll-behavior: none; /* Отключает "оттягивание" страницы */
+            touch-action: manipulation; /* Отключает двойной тап для зума */
         }
+        
         :root {
             --bg: #E8E6E1;
             --panel: #ffffff;
@@ -174,6 +204,7 @@
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--border) #f5f5f5;
+            -webkit-overflow-scrolling: touch;
         }
         .rr-channels::-webkit-scrollbar { width: 5px; }
         .rr-channels::-webkit-scrollbar-track { background: #f5f5f5; }
